@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Text.PrettyPrint.Leijen.Text.Lazy
+-- Module      :  Text.PrettyPrint.Leijen.Text
 -- Copyright   :  Ivan Lazar Miljenovic (c) 2010,
 --                Daan Leijen (c) 2000, http://www.cs.uu.nl/~daan
 -- License     :  BSD-style (see the file LICENSE)
@@ -58,7 +58,7 @@
 -- * The implementation uses optimised representations and strictness
 --   annotations.
 -----------------------------------------------------------
-module Text.PrettyPrint.Leijen.Text.Lazy (
+module Text.PrettyPrint.Leijen.Text (
    -- * Documents
    Doc, -- putDoc, hPutDoc,
 

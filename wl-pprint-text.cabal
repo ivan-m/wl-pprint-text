@@ -12,7 +12,7 @@ Build-type:          Simple
 Cabal-version:       >=1.2
 
 Library
-  Exposed-modules:     Text.PrettyPrint.Leijen.Text.Lazy, 
-                       Text.PrettyPrint.Leijen.Text.Lazy.Monadic
+  Exposed-modules:     Text.PrettyPrint.Leijen.Text, 
+                       Text.PrettyPrint.Leijen.Text.Monadic
   Build-depends:       base < 5,
                        text >= 0.8.0.0 && < 0.11.0.0

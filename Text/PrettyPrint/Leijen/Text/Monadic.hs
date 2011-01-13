@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Text.PrettyPrint.Leijen.Text.Lazy.Monadic
+-- Module      :  Text.PrettyPrint.Leijen.Text.Monadic
 -- Copyright   :  Ivan Lazar Miljenovic (c) 2010,
 --                Daan Leijen (c) 2000, http://www.cs.uu.nl/~daan
 -- License     :  BSD-style (see the file LICENSE)
@@ -10,11 +10,11 @@
 -- Portability :  portable
 --
 -- This module provides a version of
--- "Text.PrettyPrint.Leijen.Text.Lazy" where the combinators have been
+-- "Text.PrettyPrint.Leijen.Text" where the combinators have been
 -- lifted into a 'Monad'.  The main usage for this is for state-based
 -- pretty-printing.
 -----------------------------------------------------------
-module Text.PrettyPrint.Leijen.Text.Lazy.Monadic (
+module Text.PrettyPrint.Leijen.Text.Monadic (
    -- * Documents
    Doc, -- putDoc, hPutDoc,
 
@@ -67,9 +67,9 @@ module Text.PrettyPrint.Leijen.Text.Lazy.Monadic (
 
    ) where
 
-import qualified Text.PrettyPrint.Leijen.Text.Lazy as PP
-import Text.PrettyPrint.Leijen.Text.Lazy( Doc, SimpleDoc(..), renderPretty, renderCompact
-                                        , displayT, displayIO, putDoc, hPutDoc, Pretty(..))
+import qualified Text.PrettyPrint.Leijen.Text as PP
+import Text.PrettyPrint.Leijen.Text( Doc, SimpleDoc(..), renderPretty, renderCompact
+                                   , displayT, displayIO, putDoc, hPutDoc, Pretty(..))
 
 import Control.Monad(liftM, liftM2, liftM3, liftM4)
 import Data.Text.Lazy(Text)
