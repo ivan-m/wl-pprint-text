@@ -481,7 +481,7 @@ string :: Text -> Doc
 string str = case T.uncons str of
                Nothing          -> empty
                Just ('\n',str') -> line <> string str'
-               _                -> case (T.spanBy (/='\n') str) of
+               _                -> case (T.span (/='\n') str) of
                                      (xs,ys) -> text xs <> string ys
 
 -- | The document @(bool b)@ shows the literal boolean @b@ using
