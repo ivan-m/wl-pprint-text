@@ -169,7 +169,7 @@ sep = liftM PP.sep
 --   inserts a @line@ and continues doing that for all documents in
 --   @xs@.
 --
---   > fillSep xs = foldr (\<\/\>) empty xs
+--   > fillSep xs = foldr (</>) empty xs
 fillSep :: (Monad m) => m [Doc] -> m Doc
 fillSep = liftM PP.fillSep
 
