@@ -80,42 +80,162 @@ infixr 6 <>,<+>
 
 -----------------------------------------------------------
 
+-- | The document @(list xs)@ comma separates the documents @xs@ and
+--   encloses them in square brackets. The documents are rendered
+--   horizontally if that fits the page. Otherwise they are aligned
+--   vertically. All comma separators are put in front of the
+--   elements.
 list :: (Monad m) => m [Doc] -> m Doc
 list = liftM PP.list
 
+-- | The document @(tupled xs)@ comma separates the documents @xs@ and
+--   encloses them in parenthesis. The documents are rendered
+--   horizontally if that fits the page. Otherwise they are aligned
+--   vertically. All comma separators are put in front of the
+--   elements.
 tupled :: (Monad m) => m [Doc] -> m Doc
 tupled = liftM PP.tupled
 
+-- | The document @(semiBraces xs)@ separates the documents @xs@ with
+--   semi colons and encloses them in braces. The documents are
+--   rendered horizontally if that fits the page. Otherwise they are
+--   aligned vertically. All semi colons are put in front of the
+--   elements.
 semiBraces :: (Monad m) => m [Doc] -> m Doc
 semiBraces = liftM PP.semiBraces
 
+-- | The document @(encloseSep l r sep xs)@ concatenates the documents
+--   @xs@ separated by @sep@ and encloses the resulting document by
+--   @l@ and @r@. The documents are rendered horizontally if that fits
+--   the page. Otherwise they are aligned vertically. All separators
+--   are put in front of the elements. For example, the combinator
+--   'list' can be defined with @encloseSep@:
+--
+--   > list xs = encloseSep lbracket rbracket comma xs
+--   > test = text "list" <+> (list (map int [10,200,3000]))
+--
+--   Which is layed out with a page width of 20 as:
+--
+--   @
+--   list [10,200,3000]
+--   @
+--
+--   But when the page width is 15, it is layed out as:
+--
+--   @
+--   list [10
+--        ,200
+--        ,3000]
+--   @
 encloseSep :: (Monad m) => m Doc -> m Doc -> m Doc -> m [Doc] -> m Doc
 encloseSep = liftM4 PP.encloseSep
 
+-- | @(punctuate p xs)@ concatenates all documents in @xs@ with
+--   document @p@ except for the last document.
+--
+--   > someText = map text ["words","in","a","tuple"]
+--   > test = parens (align (cat (punctuate comma someText)))
+--
+--   This is layed out on a page width of 20 as:
+--
+--   @
+--   (words,in,a,tuple)
+--   @
+--
+--   But when the page width is 15, it is layed out as:
+--
+--   @
+--   (words,
+--    in,
+--    a,
+--    tuple)
+--   @
+--
+--   (If you want put the commas in front of their elements instead of
+--   at the end, you should use 'tupled' or, in general, 'encloseSep'.)
 punctuate :: (Monad m) => m Doc -> m [Doc] -> m [Doc]
 punctuate = liftM2 PP.punctuate
 
+-- | The document @(sep xs)@ concatenates all documents @xs@ either
+--   horizontally with @(\<+\>)@, if it fits the page, or vertically
+--   with @(\<$\>)@.
+--
+--   > sep xs = group (vsep xs)
 sep :: (Monad m) => m [Doc] -> m Doc
 sep = liftM PP.sep
 
+-- | The document @(fillSep xs)@ concatenates documents @xs@
+--   horizontally with @(\<+\>)@ as long as its fits the page, than
+--   inserts a @line@ and continues doing that for all documents in
+--   @xs@.
+--
+--   > fillSep xs = foldr (\<\/\>) empty xs
 fillSep :: (Monad m) => m [Doc] -> m Doc
 fillSep = liftM PP.fillSep
 
+-- | The document @(hsep xs)@ concatenates all documents @xs@
+--   horizontally with @(\<+\>)@.
 hsep :: (Monad m) => m [Doc] -> m Doc
 hsep = liftM PP.hsep
 
+-- | The document @(vsep xs)@ concatenates all documents @xs@
+--   vertically with @(\<$\>)@. If a 'group' undoes the line breaks
+--   inserted by @vsep@, all documents are separated with a space.
+--
+--   > someText = map text (words ("text to lay out"))
+--   >
+--   > test = text "some" <+> vsep someText
+--
+--   This is layed out as:
+--
+--   @
+--   some text
+--   to
+--   lay
+--   out
+--   @
+--
+--   The 'align' combinator can be used to align the documents under
+--   their first element
+--
+--   > test = text "some" <+> align (vsep someText)
+--
+--   Which is printed as:
+--
+--   @
+--   some text
+--        to
+--        lay
+--        out
+--   @
 vsep :: (Monad m) => m [Doc] -> m Doc
 vsep = liftM PP.vsep
 
+-- | The document @(cat xs)@ concatenates all documents @xs@ either
+--   horizontally with @(\<\>)@, if it fits the page, or vertically
+--   with @(\<$$\>)@.
+--
+--   > cat xs = group (vcat xs)
 cat :: (Monad m) => m [Doc] -> m Doc
 cat = liftM PP.cat
 
+-- | The document @(fillCat xs)@ concatenates documents @xs@
+--   horizontally with @(\<\>)@ as long as its fits the page, than
+--   inserts a @linebreak@ and continues doing that for all documents
+--   in @xs@.
+--
+--   > fillCat xs = foldr (<//>) empty xs
 fillCat :: (Monad m) => m [Doc] -> m Doc
 fillCat = liftM PP.fillCat
 
+-- | The document @(hcat xs)@ concatenates all documents @xs@
+--   horizontally with @(\<\>)@.
 hcat :: (Monad m) => m [Doc] -> m Doc
 hcat = liftM PP.hcat
 
+-- | The document @(vcat xs)@ concatenates all documents @xs@
+--   vertically with @(\<$$\>)@. If a 'group' undoes the line breaks
+--   inserted by @vcat@, all documents are directly concatenated.
 vcat :: (Monad m) => m [Doc] -> m Doc
 vcat = liftM PP.vcat
 
