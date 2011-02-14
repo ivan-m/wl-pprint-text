@@ -65,7 +65,7 @@
 -----------------------------------------------------------
 module Text.PrettyPrint.Leijen.Text (
    -- * Documents
-   Doc, -- putDoc, hPutDoc,
+   Doc,
 
    -- * Basic combinators
    empty, char, text, (<>), nest, line, linebreak, group, softline,
@@ -728,14 +728,14 @@ align d = column (\k ->
 --   world
 --   @
 data Doc = Empty
-                | Char Char             -- invariant: char is not '\n'
-                | Text !Int64 Builder      -- invariant: text doesn't contain '\n'
-                | Line !Bool            -- True <=> when undone by group, do not insert a space
-                | Cat Doc Doc
-                | Nest !Int64 Doc
-                | Union Doc Doc         -- invariant: first lines of first doc longer than the first lines of the second doc
-                | Column  (Int64 -> Doc)
-                | Nesting (Int64 -> Doc)
+         | Char Char             -- invariant: char is not '\n'
+         | Text !Int64 Builder   -- invariant: text doesn't contain '\n'
+         | Line !Bool            -- True <=> when undone by group, do not insert a space
+         | Cat Doc Doc
+         | Nest !Int64 Doc
+         | Union Doc Doc         -- invariant: first lines of first doc longer than the first lines of the second doc
+         | Column  (Int64 -> Doc)
+         | Nesting (Int64 -> Doc)
 
 -- | The data type @SimpleDoc@ represents rendered documents and is
 --   used by the display functions.
