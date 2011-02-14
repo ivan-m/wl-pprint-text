@@ -57,6 +57,11 @@
 --
 -- * The implementation uses optimised representations and strictness
 --   annotations.
+--
+-- Ways that this library differs from /wl-pprint/ (apart from using
+-- 'Text' rather than 'String'):
+--
+-- * @'<+>'@ has the 'empty' document as an identity.
 -----------------------------------------------------------
 module Text.PrettyPrint.Leijen.Text (
    -- * Documents
@@ -319,8 +324,10 @@ x <> y = x `beside` y
 
 -- | The document @(x \<+\> y)@ concatenates document @x@ and @y@ with
 --   a @space@ in between.  (infixr 6)
-(<+>)   :: Doc -> Doc -> Doc
-x <+> y = x <> space <> y
+(<+>) :: Doc -> Doc -> Doc
+Empty <+> y     = y
+x     <+> Empty = x
+x     <+> y     = x <> space <> y
 
 -- | The document @(x \<\/\> y)@ concatenates document @x@ and @y@
 --   with a 'softline' in between. This effectively puts @x@ and @y@
