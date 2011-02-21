@@ -61,7 +61,8 @@
 -- Ways that this library differs from /wl-pprint/ (apart from using
 -- 'Text' rather than 'String'):
 --
--- * @'<+>'@ has the 'empty' document as an identity.
+-- * Smarter treatment of 'empty' sub-documents (partially copied over
+--   from the /pretty/ library).
 -----------------------------------------------------------
 module Text.PrettyPrint.Leijen.Text (
    -- * Documents
@@ -333,25 +334,35 @@ x     <+> y     = x <> space <> y
 --   with a 'softline' in between. This effectively puts @x@ and @y@
 --   either next to each other (with a @space@ in between) or
 --   underneath each other. (infixr 5)
-(</>)   :: Doc -> Doc -> Doc
-x </> y = x <> softline <> y
+(</>) :: Doc -> Doc -> Doc
+(</>) = splitWithBreak False
 
 -- | The document @(x \<\/\/\> y)@ concatenates document @x@ and @y@
 --   with a 'softbreak' in between. This effectively puts @x@ and @y@
 --   either right next to each other or underneath each other. (infixr
 --   5)
-(<//>)   :: Doc -> Doc -> Doc
-x <//> y = x <> softbreak <> y
+(<//>) :: Doc -> Doc -> Doc
+(<//>) = splitWithBreak True
+
+splitWithBreak               :: Bool -> Doc -> Doc -> Doc
+splitWithBreak _ Empty b     = b
+splitWithBreak _ a     Empty = a
+splitWithBreak f a     b     = a <> group (Line f) <> b
 
 -- | The document @(x \<$\> y)@ concatenates document @x@ and @y@ with
 --   a 'line' in between. (infixr 5)
-(<$>)   :: Doc -> Doc -> Doc
-x <$> y = x <> line <> y
+(<$>) :: Doc -> Doc -> Doc
+(<$>) = splitWithLine False
 
 -- | The document @(x \<$$\> y)@ concatenates document @x@ and @y@
 --   with a @linebreak@ in between. (infixr 5)
-(<$$>)   :: Doc -> Doc -> Doc
-x <$$> y = x <> linebreak <> y
+(<$$>) :: Doc -> Doc -> Doc
+(<$$>) = splitWithLine True
+
+splitWithLine               :: Bool -> Doc -> Doc -> Doc
+splitWithLine _ Empty b     = b
+splitWithLine _ a     Empty = a
+splitWithLine f a     b     = a <> Line f <> b
 
 -- | The document @softline@ behaves like 'space' if the resulting
 --   output fits the page, otherwise it behaves like 'line'.
@@ -663,8 +674,9 @@ width d f = column (\k1 -> d <> column (\k2 -> f (k2 - k1)))
 --       indents these
 --       words !
 --   @
-indent     :: Int -> Doc -> Doc
-indent i d = hang i (spaced i <> d)
+indent         :: Int -> Doc -> Doc
+indent _ Empty = Empty
+indent i d     = hang i (spaced i <> d)
 
 -- | The hang combinator implements hanging indentation. The document
 --   @(hang i x)@ renders document @x@ with a nesting level set to the
@@ -784,8 +796,10 @@ line = Line False
 linebreak :: Doc
 linebreak = Line True
 
-beside :: Doc -> Doc -> Doc
-beside = Cat
+beside             :: Doc -> Doc -> Doc
+beside Empty r     = r
+beside l     Empty = l
+beside l     r     = Cat l r
 
 -- | The document @(nest i x)@ renders document @x@ with the current
 --   indentation level increased by @i@ (See also 'hang', 'align' and
@@ -800,8 +814,9 @@ beside = Cat
 --     world
 --   !
 --   @
-nest     :: Int -> Doc -> Doc
-nest i x = Nest (fromIntegral i) x
+nest         :: Int -> Doc -> Doc
+nest _ Empty = Empty
+nest i x     = Nest (fromIntegral i) x
 
 -- | Specifies how to create the document based upon which column it is in.
 column   :: (Int -> Doc) -> Doc
