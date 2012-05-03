@@ -112,8 +112,8 @@ module Text.PrettyPrint.Leijen.Text (
    Pretty(..),
 
    -- * Rendering
-   SimpleDoc(..), renderPretty, renderCompact, displayT,
-   displayIO, putDoc, hPutDoc
+   SimpleDoc(..), renderPretty, renderCompact, renderOneLine,
+   displayT, displayIO, putDoc, hPutDoc
 
    ) where
 
@@ -928,6 +928,25 @@ renderCompact x
             Char c    -> let k' = k+1 in seq k' (SChar c (scan k' ds))
             Text l s  -> let k' = k+l in seq k' (SText l s (scan k' ds))
             Line _    -> SLine 0 (scan 0 ds)
+            Cat x y   -> scan k (x:y:ds)
+            Nest j x  -> scan k (x:ds)
+            Union x y -> scan k (y:ds)
+            Column f  -> scan k (f k:ds)
+            Nesting f -> scan k (f 0:ds)
+
+-- | @(renderOneLine x)@ renders document @x@ without adding any
+--   indentation or newlines.
+renderOneLine :: Doc -> SimpleDoc
+renderOneLine x
+  = scan 0 [x]
+    where
+      scan k [] = SEmpty
+      scan k (d:ds)
+        = case d of
+            Empty     -> scan k ds
+            Char c    -> let k' = k+1 in seq k' (SChar c (scan k' ds))
+            Text l s  -> let k' = k+l in seq k' (SText l s (scan k' ds))
+            Line _    -> scan k ds
             Cat x y   -> scan k (x:y:ds)
             Nest j x  -> scan k (x:ds)
             Union x y -> scan k (y:ds)
