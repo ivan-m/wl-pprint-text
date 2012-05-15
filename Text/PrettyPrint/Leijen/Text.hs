@@ -117,6 +117,7 @@ module Text.PrettyPrint.Leijen.Text (
 
    ) where
 
+import Data.String (IsString(fromString))
 import System.IO (Handle,hPutStr,hPutChar,stdout)
 
 import qualified Data.Text.Lazy as T
@@ -748,6 +749,9 @@ data Doc = Empty
          | Union Doc Doc         -- invariant: first lines of first doc longer than the first lines of the second doc
          | Column  (Int64 -> Doc)
          | Nesting (Int64 -> Doc)
+
+instance IsString Doc where
+  fromString = string . T.pack
 
 -- | The data type @SimpleDoc@ represents rendered documents and is
 --   used by the display functions.
