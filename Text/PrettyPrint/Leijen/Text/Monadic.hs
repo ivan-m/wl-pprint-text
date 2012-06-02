@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Text.PrettyPrint.Leijen.Text.Monadic
@@ -71,12 +73,16 @@ import qualified Text.PrettyPrint.Leijen.Text as PP
 import Text.PrettyPrint.Leijen.Text( Doc, SimpleDoc(..), renderPretty, renderCompact
                                    , displayT, displayIO, putDoc, hPutDoc, Pretty(..))
 
+import Data.String (IsString(fromString))
 import Control.Monad(liftM, liftM2, liftM3, liftM4)
 import Data.Text.Lazy(Text)
 import Data.Int(Int64)
 
 infixr 5 </>,<//>,<$>,<$$>
 infixr 6 <>,<+>
+
+instance Monad m => IsString (m Doc) where
+    fromString = string . fromString
 
 -----------------------------------------------------------
 
