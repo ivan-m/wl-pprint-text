@@ -64,13 +64,14 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
    Pretty(..), prettyM,
 
    -- * Rendering
-   SimpleDoc(..), renderPretty, renderCompact, displayT,
-   displayIO, putDoc, hPutDoc
+   SimpleDoc(..), renderPretty, renderCompact, renderOneLine,
+   displayT, displayIO, putDoc, hPutDoc
 
    ) where
 
 import qualified Text.PrettyPrint.Leijen.Text as PP
-import Text.PrettyPrint.Leijen.Text( Doc, SimpleDoc(..), renderPretty, renderCompact
+import Text.PrettyPrint.Leijen.Text( Doc, SimpleDoc(..)
+                                   , renderPretty, renderCompact, renderOneLine
                                    , displayT, displayIO, putDoc, hPutDoc, Pretty(..))
 
 import Data.String (IsString(fromString))
