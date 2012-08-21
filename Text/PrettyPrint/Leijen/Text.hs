@@ -126,7 +126,7 @@ import qualified Data.Text.Lazy.IO as T
 import qualified Data.Text.Lazy.Builder as B
 import Data.Text.Lazy.Builder(Builder)
 import Data.Int(Int64)
-import Data.Monoid(mempty,mappend)
+import Data.Monoid(Monoid(mempty,mappend))
 
 infixr 5 </>,<//>,<$>,<$$>
 infixr 6 <>,<+>
@@ -752,6 +752,10 @@ data Doc = Empty
 
 instance IsString Doc where
   fromString = string . T.pack
+
+instance Monoid Doc where
+    mempty  = empty
+    mappend = beside
 
 -- | The data type @SimpleDoc@ represents rendered documents and is
 --   used by the display functions.
