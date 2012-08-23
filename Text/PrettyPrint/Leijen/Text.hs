@@ -113,7 +113,7 @@ module Text.PrettyPrint.Leijen.Text (
 
    -- * Rendering
    SimpleDoc(..), renderPretty, renderCompact, renderOneLine,
-   displayT, displayIO, putDoc, hPutDoc
+   displayB, displayT, displayIO, putDoc, hPutDoc
 
    ) where
 

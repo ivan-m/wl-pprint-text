@@ -65,14 +65,15 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
 
    -- * Rendering
    SimpleDoc(..), renderPretty, renderCompact, renderOneLine,
-   displayT, displayIO, putDoc, hPutDoc
+   displayB, displayT, displayIO, putDoc, hPutDoc
 
    ) where
 
 import qualified Text.PrettyPrint.Leijen.Text as PP
 import Text.PrettyPrint.Leijen.Text( Doc, SimpleDoc(..)
                                    , renderPretty, renderCompact, renderOneLine
-                                   , displayT, displayIO, putDoc, hPutDoc, Pretty(..))
+                                   , displayB, displayT, displayIO
+                                   , putDoc, hPutDoc, Pretty(..))
 
 import Data.String (IsString(fromString))
 import Control.Monad(liftM, liftM2, liftM3, liftM4)
