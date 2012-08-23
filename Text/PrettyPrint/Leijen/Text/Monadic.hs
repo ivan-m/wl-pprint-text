@@ -172,7 +172,7 @@ sep :: (Monad m) => m [Doc] -> m Doc
 sep = liftM PP.sep
 
 -- | The document @(fillSep xs)@ concatenates documents @xs@
---   horizontally with @(\<+\>)@ as long as its fits the page, than
+--   horizontally with @(\<+\>)@ as long as its fits the page, then
 --   inserts a @line@ and continues doing that for all documents in
 --   @xs@.
 --
@@ -227,7 +227,7 @@ cat :: (Monad m) => m [Doc] -> m Doc
 cat = liftM PP.cat
 
 -- | The document @(fillCat xs)@ concatenates documents @xs@
---   horizontally with @(\<\>)@ as long as its fits the page, than
+--   horizontally with @(\<\>)@ as long as its fits the page, then
 --   inserts a @linebreak@ and continues doing that for all documents
 --   in @xs@.
 --
@@ -446,7 +446,7 @@ rational = return . PP.rational
 prettyM :: (Pretty a, Monad m) => a -> m Doc
 prettyM = return . pretty
 
--- | The document @(fill i x)@ renders document @x@. It than appends
+-- | The document @(fill i x)@ renders document @x@. It then appends
 --   @space@s until the width is equal to @i@. If the width of @x@ is
 --   already larger, nothing is appended. This combinator is quite
 --   useful in practice to output a list of bindings. The following
@@ -476,7 +476,7 @@ width :: (Monad m) => m Doc -> m (Int -> Doc) -> m Doc
 width = liftM2 PP.width
 
 -- | The document @(fillBreak i x)@ first renders document @x@. It
---   than appends @space@s until the width is equal to @i@. If the
+--   then appends @space@s until the width is equal to @i@. If the
 --   width of @x@ is already larger than @i@, the nesting level is
 --   increased by @i@ and a @line@ is appended. When we redefine
 --   @ptype@ in the previous example to use @fillBreak@, we get a
