@@ -70,7 +70,7 @@ module Text.PrettyPrint.Leijen.Text (
 
    -- * Basic combinators
    empty, char, text, (<>), nest, line, linebreak, group, softline,
-   softbreak,
+   softbreak, spacebreak,
 
    -- * Alignment
    --
@@ -87,7 +87,7 @@ module Text.PrettyPrint.Leijen.Text (
    align, hang, indent, encloseSep, list, tupled, semiBraces,
 
    -- * Operators
-   (<+>), (<$>), (</>), (<$$>), (<//>),
+   (<+>), (<++>), (<$>), (</>), (<$$>), (<//>),
 
    -- * List combinators
    hsep, vsep, fillSep, sep, hcat, vcat, fillCat, cat, punctuate,
@@ -129,7 +129,7 @@ import Data.Int(Int64)
 import Data.Monoid(Monoid(mempty,mappend))
 
 infixr 5 </>,<//>,<$>,<$$>
-infixr 6 <>,<+>
+infixr 6 <>,<+>,<++>
 
 
 -----------------------------------------------------------
@@ -331,6 +331,14 @@ Empty <+> y     = y
 x     <+> Empty = x
 x     <+> y     = x <> space <> y
 
+-- | The document @(x \<++\> y)@ concatenates document @x@ and @y@ with
+--   a 'spacebreak' in between.  (infixr 6)
+(<++>) :: Doc -> Doc -> Doc
+Empty <++> y     = y
+x     <++> Empty = x
+x     <++> y     = x <> spacebreak <> y
+
+
 -- | The document @(x \<\/\> y)@ concatenates document @x@ and @y@
 --   with a 'softline' in between. This effectively puts @x@ and @y@
 --   either next to each other (with a @space@ in between) or
@@ -378,6 +386,11 @@ softline = group line
 --   > softbreak = group linebreak
 softbreak :: Doc
 softbreak = group linebreak
+
+-- | The document @spacebreak@ behaves like 'space' when rendered normally
+-- but like 'empty' when using 'renderCompact' or 'renderOneLine'.
+spacebreak :: Doc
+spacebreak = Spaces 1
 
 -- | Document @(squotes x)@ encloses document @x@ with single quotes
 --   \"'\".

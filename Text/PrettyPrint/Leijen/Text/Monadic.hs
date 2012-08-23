@@ -22,7 +22,7 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
 
    -- * Basic combinators
    empty, char, text, (<>), nest, line, linebreak, group, softline,
-   softbreak,
+   softbreak, spacebreak,
 
    -- * Alignment
    --
@@ -39,7 +39,7 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
    align, hang, indent, encloseSep, list, tupled, semiBraces,
 
    -- * Operators
-   (<+>), (<$>), (</>), (<$$>), (<//>),
+   (<+>), (<++>), (<$>), (</>), (<$$>), (<//>),
 
    -- * List combinators
    hsep, vsep, fillSep, sep, hcat, vcat, fillCat, cat, punctuate,
@@ -258,6 +258,11 @@ vcat = liftM PP.vcat
 (<+>) :: (Monad m) => m Doc -> m Doc -> m Doc
 (<+>) = liftM2 (PP.<+>)
 
+-- | The document @(x \<++\> y)@ concatenates document @x@ and @y@ with
+--   a 'spacebreak' in between.  (infixr 6)
+(<++>) :: (Monad m) => m Doc -> m Doc -> m Doc
+(<++>) = liftM2 (PP.<++>)
+
 -- | The document @(x \<\/\> y)@ concatenates document @x@ and @y@
 --   with a 'softline' in between. This effectively puts @x@ and @y@
 --   either next to each other (with a @space@ in between) or
@@ -291,6 +296,11 @@ softline = return PP.softline
 --   output fits the page, otherwise it behaves like 'line'.
 softbreak :: (Monad m) => m Doc
 softbreak = return PP.softbreak
+
+-- | The document @spacebreak@ behaves like 'space' when rendered normally
+-- but like 'empty' when using 'renderCompact' or 'renderOneLine'.
+spacebreak :: (Monad m) => m Doc
+spacebreak = return PP.spacebreak
 
 -- | Document @(squotes x)@ encloses document @x@ with single quotes
 --   \"'\".
