@@ -172,13 +172,13 @@ semiBraces = encloseSep lbrace rbrace semi
 --   > list xs = encloseSep lbracket rbracket comma xs
 --   > test = text "list" <+> (list (map int [10,200,3000]))
 --
---   Which is layed out with a page width of 20 as:
+--   Which is laid out with a page width of 20 as:
 --
 --   @
 --   list [10,200,3000]
 --   @
 --
---   But when the page width is 15, it is layed out as:
+--   But when the page width is 15, it is laid out as:
 --
 --   @
 --   list [10
@@ -203,13 +203,13 @@ encloseSep left right sep ds
 --   > someText = map text ["words","in","a","tuple"]
 --   > test = parens (align (cat (punctuate comma someText)))
 --
---   This is layed out on a page width of 20 as:
+--   This is laid out on a page width of 20 as:
 --
 --   @
 --   (words,in,a,tuple)
 --   @
 --
---   But when the page width is 15, it is layed out as:
+--   But when the page width is 15, it is laid out as:
 --
 --   @
 --   (words,
@@ -261,7 +261,7 @@ hsep = fold (<+>)
 --   >
 --   > test = text "some" <+> vsep someText
 --
---   This is layed out as:
+--   This is laid out as:
 --
 --   @
 --   some text
@@ -640,7 +640,7 @@ fillBreak f x = width x (\w ->
 --   >
 --   > test = text "let" <+> align (vcat (map ptype types))
 --
---   Which is layed out as:
+--   Which is laid out as:
 --
 --   @
 --   let empty  :: Doc
@@ -712,7 +712,7 @@ hang i d = align (nest i d)
 --
 --   > test = text "hi" <+> (text "nice" $$ text "world")
 --
---   which will be layed out as:
+--   which will be laid out as:
 --
 --   @
 --   hi nice
