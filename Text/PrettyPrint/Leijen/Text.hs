@@ -951,15 +951,16 @@ renderOneLine x
       scan k [] = SEmpty
       scan k (d:ds)
         = case d of
-            Empty     -> scan k ds
-            Char c    -> let k' = k+1 in seq k' (SChar c (scan k' ds))
-            Text l s  -> let k' = k+l in seq k' (SText l s (scan k' ds))
-            Line _    -> scan k ds
-            Cat x y   -> scan k (x:y:ds)
-            Nest j x  -> scan k (x:ds)
-            Union x y -> scan k (y:ds)
-            Column f  -> scan k (f k:ds)
-            Nesting f -> scan k (f 0:ds)
+            Empty      -> scan k ds
+            Char c     -> let k' = k+1 in seq k' (SChar c (scan k' ds))
+            Text l s   -> let k' = k+l in seq k' (SText l s (scan k' ds))
+            Line False -> let k' = k+1 in seq k' (SChar ' ' (scan k' ds))
+            Line _     -> scan k ds
+            Cat x y    -> scan k (x:y:ds)
+            Nest j x   -> scan k (x:ds)
+            Union x y  -> scan k (y:ds)
+            Column f   -> scan k (f k:ds)
+            Nesting f  -> scan k (f 0:ds)
 
 -----------------------------------------------------------
 -- Displayers:  displayS and displayIO
