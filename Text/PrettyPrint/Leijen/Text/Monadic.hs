@@ -26,16 +26,16 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
 
    -- * Alignment
    --
-   -- The combinators in this section can not be described by Wadler's
-   -- original combinators. They align their output relative to the
-   -- current output position - in contrast to @nest@ which always
-   -- aligns to the current nesting level. This deprives these
-   -- combinators from being \`optimal\'. In practice however they
-   -- prove to be very useful. The combinators in this section should
-   -- be used with care, since they are more expensive than the other
-   -- combinators. For example, @align@ shouldn't be used to pretty
-   -- print all top-level declarations of a language, but using @hang@
-   -- for let expressions is fine.
+   -- | The combinators in this section can not be described by Wadler's
+   --   original combinators. They align their output relative to the
+   --   current output position - in contrast to @nest@ which always
+   --   aligns to the current nesting level. This deprives these
+   --   combinators from being \`optimal\'. In practice however they
+   --   prove to be very useful. The combinators in this section should
+   --   be used with care, since they are more expensive than the other
+   --   combinators. For example, @align@ shouldn't be used to pretty
+   --   print all top-level declarations of a language, but using @hang@
+   --   for let expressions is fine.
    align, hang, indent, encloseSep, list, tupled, semiBraces,
 
    -- * Operators
