@@ -749,6 +749,7 @@ data Doc = Empty
          | Union Doc Doc         -- invariant: first lines of first doc longer than the first lines of the second doc
          | Column  (Int64 -> Doc)
          | Nesting (Int64 -> Doc)
+         | Spaces !Int64
 
 instance IsString Doc where
   fromString = string . T.pack
@@ -897,6 +898,7 @@ renderPretty rfrac w x
                                     (best n k $ Cons i y ds)
             Column f  -> best n k (Cons i (f k) ds)
             Nesting f -> best n k (Cons i (f i) ds)
+            Spaces l  -> let k' = k+l in seq k' $ SText l (spaces l) (best n k' ds)
 
       --nicest :: r = ribbon width, w = page width,
       --          n = indentation of current line, k = current column
@@ -941,6 +943,7 @@ renderCompact x
             Union x y -> scan k (y:ds)
             Column f  -> scan k (f k:ds)
             Nesting f -> scan k (f 0:ds)
+            Spaces _   -> scan k ds
 
 -- | @(renderOneLine x)@ renders document @x@ without adding any
 --   indentation or newlines.
@@ -961,6 +964,7 @@ renderOneLine x
             Union x y  -> scan k (y:ds)
             Column f   -> scan k (f k:ds)
             Nesting f  -> scan k (f 0:ds)
+            Spaces _   -> scan k ds
 
 -----------------------------------------------------------
 -- Displayers:  displayS and displayIO
@@ -1051,7 +1055,7 @@ spaces n
   | otherwise = B.fromLazyText $ T.replicate n (T.singleton ' ')
 
 spaced   :: Int -> Doc
-spaced l = Text l' $ spaces l'
+spaced l = Spaces l'
   where
     l' = fromIntegral l
 
