@@ -325,7 +325,7 @@ fold f ds = foldr1 f ds
 x <> y = x `beside` y
 
 -- | The document @(x \<+\> y)@ concatenates document @x@ and @y@ with
---   a @space@ in between.  (infixr 6)
+--   a 'space' in between.  (infixr 6)
 (<+>) :: Doc -> Doc -> Doc
 Empty <+> y     = y
 x     <+> Empty = x
@@ -356,7 +356,7 @@ splitWithBreak f a     b     = a <> group (Line f) <> b
 (<$>) = splitWithLine False
 
 -- | The document @(x \<$$\> y)@ concatenates document @x@ and @y@
---   with a @linebreak@ in between. (infixr 5)
+--   with a 'linebreak' in between. (infixr 5)
 (<$$>) :: Doc -> Doc -> Doc
 (<$$>) = splitWithLine True
 

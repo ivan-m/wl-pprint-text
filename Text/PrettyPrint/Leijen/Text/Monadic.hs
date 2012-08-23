@@ -254,7 +254,7 @@ vcat = liftM PP.vcat
 (<>) = liftM2 (PP.<>)
 
 -- | The document @(x \<+\> y)@ concatenates document @x@ and @y@ with
---   a @space@ in between.  (infixr 6)
+--   a 'space' in between.  (infixr 6)
 (<+>) :: (Monad m) => m Doc -> m Doc -> m Doc
 (<+>) = liftM2 (PP.<+>)
 
@@ -278,7 +278,7 @@ vcat = liftM PP.vcat
 (<$>) = liftM2 (PP.<$>)
 
 -- | The document @(x \<$$\> y)@ concatenates document @x@ and @y@
---   with a @linebreak@ in between. (infixr 5)
+--   with a 'linebreak' in between. (infixr 5)
 (<$$>) :: (Monad m) => m Doc -> m Doc -> m Doc
 (<$$>) = liftM2 (PP.<$$>)
 
