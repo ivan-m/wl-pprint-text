@@ -81,7 +81,7 @@ import Data.Text.Lazy(Text)
 import Data.Int(Int64)
 
 infixr 5 </>,<//>,<$>,<$$>
-infixr 6 <>,<+>
+infixr 6 <>,<+>,<++>
 
 instance Monad m => IsString (m Doc) where
     fromString = string . fromString
