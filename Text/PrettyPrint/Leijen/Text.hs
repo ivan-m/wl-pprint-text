@@ -808,7 +808,8 @@ text s
 
 -- | The @line@ document advances to the next line and indents to the
 --   current nesting level. Document @line@ behaves like @(text \"
---   \")@ if the line break is undone by 'group'.
+--   \")@ if the line break is undone by 'group' or if rendered with
+--   'renderOneLine'.
 line :: Doc
 line = Line False
 
