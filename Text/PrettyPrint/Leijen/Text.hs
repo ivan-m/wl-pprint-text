@@ -957,7 +957,7 @@ renderCompact x
             Union x y -> scan k (y:ds)
             Column f  -> scan k (f k:ds)
             Nesting f -> scan k (f 0:ds)
-            Spaces _   -> scan k ds
+            Spaces _  -> scan k ds
 
 -- | @(renderOneLine x)@ renders document @x@ without adding any
 --   indentation or newlines.
