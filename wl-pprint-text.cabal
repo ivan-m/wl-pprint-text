@@ -13,7 +13,7 @@ Cabal-version:       >=1.6
 
 Source-Repository head
     type: darcs
-    location: http://code.haskell.org/~ivanm/wl-pprint-text
+    location: http://hub.darcs.net/ivanm/wl-pprint-text
 
 Library
   Exposed-modules:     Text.PrettyPrint.Leijen.Text,
