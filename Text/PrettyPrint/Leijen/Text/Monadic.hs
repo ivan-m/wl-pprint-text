@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances, CPP #-}
 
 -----------------------------------------------------------------------------
 -- |
@@ -79,6 +79,9 @@ import Data.String (IsString(fromString))
 import Control.Monad(liftM, liftM2, liftM3, liftM4)
 import Data.Text.Lazy(Text)
 import Data.Int(Int64)
+#if defined(__GLASGOW_HASKELL__) && __GLASGOW_HASKELL__ >= 710
+import Prelude hiding ((<$>))
+#endif
 
 infixr 5 </>,<//>,<$>,<$$>
 infixr 6 <>,<+>,<++>

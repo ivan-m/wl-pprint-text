@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Text.PrettyPrint.Leijen.Text
@@ -127,6 +128,9 @@ import qualified Data.Text.Lazy.Builder as B
 import Data.Text.Lazy.Builder(Builder)
 import Data.Int(Int64)
 import Data.Monoid(Monoid(mempty,mappend))
+#if defined(__GLASGOW_HASKELL__) && __GLASGOW_HASKELL__ >= 710
+import Prelude hiding ((<$>))
+#endif
 
 infixr 5 </>,<//>,<$>,<$$>
 infixr 6 <>,<+>,<++>
