@@ -118,19 +118,21 @@ module Text.PrettyPrint.Leijen.Text (
 
    ) where
 
-import Data.String (IsString(fromString))
-import System.IO (Handle,hPutStr,hPutChar,stdout)
-
-import qualified Data.Text.Lazy as T
-import Data.Text.Lazy(Text)
-import qualified Data.Text.Lazy.IO as T
-import qualified Data.Text.Lazy.Builder as B
-import Data.Text.Lazy.Builder(Builder)
-import Data.Int(Int64)
-import Data.Monoid(Monoid(mempty,mappend))
 #if defined(__GLASGOW_HASKELL__) && __GLASGOW_HASKELL__ >= 710
 import Prelude hiding ((<$>))
 #endif
+
+import Data.String (IsString (..))
+import System.IO   (Handle, hPutChar, hPutStr, stdout)
+
+import           Data.Int               (Int64)
+import           Data.Monoid            (Monoid (..))
+import           Data.Text.Lazy         (Text)
+import qualified Data.Text.Lazy         as T
+import           Data.Text.Lazy.Builder (Builder)
+import qualified Data.Text.Lazy.Builder as B
+import qualified Data.Text.Lazy.IO      as T
+
 
 infixr 5 </>,<//>,<$>,<$$>
 infixr 6 <>,<+>,<++>

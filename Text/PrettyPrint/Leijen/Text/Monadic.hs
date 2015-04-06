@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, CPP #-}
+{-# LANGUAGE CPP, FlexibleInstances #-}
 
 -----------------------------------------------------------------------------
 -- |
@@ -69,19 +69,20 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
 
    ) where
 
-import qualified Text.PrettyPrint.Leijen.Text as PP
-import Text.PrettyPrint.Leijen.Text( Doc, SimpleDoc(..)
-                                   , renderPretty, renderCompact, renderOneLine
-                                   , displayB, displayT, displayIO
-                                   , putDoc, hPutDoc, Pretty(..))
-
-import Data.String (IsString(fromString))
-import Control.Monad(liftM, liftM2, liftM3, liftM4)
-import Data.Text.Lazy(Text)
-import Data.Int(Int64)
 #if defined(__GLASGOW_HASKELL__) && __GLASGOW_HASKELL__ >= 710
 import Prelude hiding ((<$>))
 #endif
+
+import           Text.PrettyPrint.Leijen.Text (Doc, Pretty (..), SimpleDoc (..),
+                                               displayB, displayIO, displayT,
+                                               hPutDoc, putDoc, renderCompact,
+                                               renderOneLine, renderPretty)
+import qualified Text.PrettyPrint.Leijen.Text as PP
+
+import Control.Monad  (liftM, liftM2, liftM3, liftM4)
+import Data.Int       (Int64)
+import Data.String    (IsString (..))
+import Data.Text.Lazy (Text)
 
 infixr 5 </>,<//>,<$>,<$$>
 infixr 6 <>,<+>,<++>
@@ -632,4 +633,3 @@ nesting = liftM PP.nesting
 --   without any changes.
 group :: (Monad m) => m Doc -> m Doc
 group = liftM PP.group
-
