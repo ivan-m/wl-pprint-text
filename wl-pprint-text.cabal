@@ -1,5 +1,5 @@
 Name:                wl-pprint-text
-Version:             1.1.0.3
+Version:             1.1.0.4
 Synopsis:            A Wadler/Leijen Pretty Printer for Text values
 Description:         A clone of wl-pprint for use with the text library.
 License:             BSD3
