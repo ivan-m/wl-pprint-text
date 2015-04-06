@@ -80,7 +80,6 @@ import           Text.PrettyPrint.Leijen.Text (Doc, Pretty (..), SimpleDoc (..),
 import qualified Text.PrettyPrint.Leijen.Text as PP
 
 import Control.Monad  (liftM, liftM2, liftM3, liftM4)
-import Data.Int       (Int64)
 import Data.String    (IsString (..))
 import Data.Text.Lazy (Text)
 

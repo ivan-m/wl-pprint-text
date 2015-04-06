@@ -123,7 +123,7 @@ import Prelude hiding ((<$>))
 #endif
 
 import Data.String (IsString (..))
-import System.IO   (Handle, hPutChar, hPutStr, stdout)
+import System.IO   (Handle, hPutChar, stdout)
 
 import           Data.Int               (Int64)
 import           Data.Monoid            (Monoid (..))
@@ -192,11 +192,11 @@ semiBraces = encloseSep lbrace rbrace semi
 --        ,3000]
 --   @
 encloseSep :: Doc -> Doc -> Doc -> [Doc] -> Doc
-encloseSep left right sep ds
+encloseSep left right sp ds
   = case ds of
       []  -> left <> right
       [d] -> left <> d <> right
-      _   -> align (cat (zipWith (<>) (left : repeat sep) ds) <> right)
+      _   -> align (cat (zipWith (<>) (left : repeat sp) ds) <> right)
 
 -----------------------------------------------------------
 -- punctuate p [d1,d2,...,dn] => [d1 <> p,d2 <> p, ... ,dn]
@@ -227,8 +227,8 @@ encloseSep left right sep ds
 --   (If you want put the commas in front of their elements instead of
 --   at the end, you should use 'tupled' or, in general, 'encloseSep'.)
 punctuate :: Doc -> [Doc] -> [Doc]
-punctuate p [] = []
-punctuate p [d] = [d]
+punctuate _ [] = []
+punctuate _ [d] = [d]
 punctuate p (d:ds) = (d <> p) : punctuate p ds
 
 
@@ -321,7 +321,7 @@ vcat :: [Doc] -> Doc
 vcat = fold (<$$>)
 
 fold      :: (Doc -> Doc -> Doc) -> [Doc] -> Doc
-fold f [] = empty
+fold _ [] = empty
 fold f ds = foldr1 f ds
 
 -- | The document @(x \<\> y)@ concatenates document @x@ and document
@@ -865,13 +865,13 @@ group   :: Doc -> Doc
 group x = Union (flatten x) x
 
 flatten              :: Doc -> Doc
-flatten (Cat x y)    = Cat (flatten x) (flatten y)
-flatten (Nest i x)   = Nest i (flatten x)
-flatten (Line break) = if break then Empty else Text 1 (B.singleton ' ')
-flatten (Union x y)  = flatten x
-flatten (Column f)   = Column (flatten . f)
-flatten (Nesting f)  = Nesting (flatten . f)
-flatten other        = other                     --Empty,Char,Text
+flatten (Cat x y)   = Cat (flatten x) (flatten y)
+flatten (Nest i x)  = Nest i (flatten x)
+flatten (Line brk)  = if brk then Empty else Text 1 (B.singleton ' ')
+flatten (Union x _) = flatten x
+flatten (Column f)  = Column (flatten . f)
+flatten (Nesting f) = Nesting (flatten . f)
+flatten other       = other                     --Empty,Char,Text
 
 -----------------------------------------------------------
 -- Renderers
@@ -894,8 +894,8 @@ data Docs = Nil
 --   is lower or higher, the ribbon width will be 0 or @width@
 --   respectively.
 renderPretty :: Float -> Int -> Doc -> SimpleDoc
-renderPretty rfrac w x
- = best 0 0 (Cons 0 x Nil)
+renderPretty rfrac w doc
+ = best 0 0 (Cons 0 doc Nil)
     where
       -- r :: the ribbon width in characters
       r = max 0 (min w64 (round (fromIntegral w * rfrac)))
@@ -905,7 +905,7 @@ renderPretty rfrac w x
       -- best :: n = indentation of current line
       --         k = current column
       --        (ie. (k >= n) && (k - n == count of inserted characters)
-      best n k Nil = SEmpty
+      best _ _ Nil = SEmpty
       best n k (Cons i d ds)
         = case d of
             Empty     -> best n k ds
@@ -925,17 +925,17 @@ renderPretty rfrac w x
       --          x and y, the (simple) documents to chose from.
       --          precondition: first lines of x are longer than the first lines of y.
       nicest n k x y
-        | fits width x = x
+        | fits wth x = x
         | otherwise    = y
           where
-            width = min (w64 - k) (r - k + n)
+            wth = min (w64 - k) (r - k + n)
 
 fits                 :: Int64 -> SimpleDoc -> Bool
-fits w x | w < 0     = False
-fits w SEmpty        = True
-fits w (SChar c x)   = fits (w - 1) x
-fits w (SText l s x) = fits (w - l) x
-fits w (SLine i x)   = True
+fits w _ | w < 0     = False
+fits _ SEmpty        = True
+fits w (SChar _ x)   = fits (w - 1) x
+fits w (SText l _ x) = fits (w - l) x
+fits _ SLine{}       = True
 
 -----------------------------------------------------------
 -- renderCompact: renders documents without indentation
@@ -948,10 +948,10 @@ fits w (SLine i x)   = True
 --   characters than a pretty printed version and can be used for
 --   output that is read by other programs.
 renderCompact :: Doc -> SimpleDoc
-renderCompact x
-  = scan 0 [x]
+renderCompact dc
+  = scan 0 [dc]
     where
-      scan k [] = SEmpty
+      scan _ [] = SEmpty
       scan k (d:ds)
         = case d of
             Empty     -> scan k ds
@@ -959,8 +959,8 @@ renderCompact x
             Text l s  -> let k' = k+l in seq k' (SText l s (scan k' ds))
             Line _    -> SLine 0 (scan 0 ds)
             Cat x y   -> scan k (x:y:ds)
-            Nest j x  -> scan k (x:ds)
-            Union x y -> scan k (y:ds)
+            Nest _ x  -> scan k (x:ds)
+            Union _ y -> scan k (y:ds)
             Column f  -> scan k (f k:ds)
             Nesting f -> scan k (f 0:ds)
             Spaces _  -> scan k ds
@@ -968,10 +968,10 @@ renderCompact x
 -- | @(renderOneLine x)@ renders document @x@ without adding any
 --   indentation or newlines.
 renderOneLine :: Doc -> SimpleDoc
-renderOneLine x
-  = scan 0 [x]
+renderOneLine dc
+  = scan 0 [dc]
     where
-      scan k [] = SEmpty
+      scan _ [] = SEmpty
       scan k (d:ds)
         = case d of
             Empty      -> scan k ds
@@ -980,8 +980,8 @@ renderOneLine x
             Line False -> let k' = k+1 in seq k' (SChar ' ' (scan k' ds))
             Line _     -> scan k ds
             Cat x y    -> scan k (x:y:ds)
-            Nest j x   -> scan k (x:ds)
-            Union x y  -> scan k (y:ds)
+            Nest _ x   -> scan k (x:ds)
+            Union _ y  -> scan k (y:ds)
             Column f   -> scan k (f k:ds)
             Nesting f  -> scan k (f 0:ds)
             Spaces _   -> scan k ds
@@ -1022,7 +1022,7 @@ displayIO handle simpleDoc
     where
       display SEmpty        = return ()
       display (SChar c x)   = hPutChar handle c >> display x
-      display (SText l s x) = T.hPutStr handle (B.toLazyText s) >> display x
+      display (SText _ s x) = T.hPutStr handle (B.toLazyText s) >> display x
       display (SLine i x)   = T.hPutStr handle newLine >> display x
         where
           newLine = B.toLazyText $ '\n' `consB` indentation i
