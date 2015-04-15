@@ -119,14 +119,15 @@ module Text.PrettyPrint.Leijen.Text (
    ) where
 
 #if defined(__GLASGOW_HASKELL__) && __GLASGOW_HASKELL__ >= 710
-import Prelude hiding ((<$>))
+import           Prelude                hiding ((<$>))
 #endif
 
-import Data.String (IsString (..))
-import System.IO   (Handle, hPutChar, stdout)
+import           Data.String            (IsString (..))
+import           System.IO              (Handle, hPutChar, stdout)
 
 import           Data.Int               (Int64)
 import           Data.Monoid            (Monoid (..))
+import           Data.Semigroup         (Semigroup (..))
 import           Data.Text.Lazy         (Text)
 import qualified Data.Text.Lazy         as T
 import           Data.Text.Lazy.Builder (Builder)
@@ -135,7 +136,7 @@ import qualified Data.Text.Lazy.IO      as T
 
 
 infixr 5 </>,<//>,<$>,<$$>
-infixr 6 <>,<+>,<++>
+infixr 6 <+>,<++>
 
 
 -----------------------------------------------------------
@@ -323,12 +324,6 @@ vcat = fold (<$$>)
 fold      :: (Doc -> Doc -> Doc) -> [Doc] -> Doc
 fold _ [] = empty
 fold f ds = foldr1 f ds
-
--- | The document @(x \<\> y)@ concatenates document @x@ and document
---   @y@. It is an associative operation having 'empty' as a left and
---   right unit.  (infixr 6)
-(<>)   :: Doc -> Doc -> Doc
-x <> y = x `beside` y
 
 -- | The document @(x \<+\> y)@ concatenates document @x@ and @y@ with
 --   a 'space' in between.  (infixr 6)
@@ -776,6 +771,8 @@ instance IsString Doc where
 instance Monoid Doc where
     mempty  = empty
     mappend = beside
+
+instance Semigroup Doc
 
 -- | The data type @SimpleDoc@ represents rendered documents and is
 --   used by the display functions.

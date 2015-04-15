@@ -1,4 +1,5 @@
-{-# LANGUAGE CPP, FlexibleInstances #-}
+{-# LANGUAGE CPP               #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 -----------------------------------------------------------------------------
 -- |
@@ -21,7 +22,7 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
    Doc, -- putDoc, hPutDoc,
 
    -- * Basic combinators
-   empty, char, text, (<>), nest, line, linebreak, group, softline,
+   empty, char, text, nest, line, linebreak, group, softline,
    softbreak, spacebreak,
 
    -- * Alignment
@@ -70,7 +71,7 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
    ) where
 
 #if defined(__GLASGOW_HASKELL__) && __GLASGOW_HASKELL__ >= 710
-import Prelude hiding ((<$>))
+import           Prelude                      hiding ((<$>))
 #endif
 
 import           Text.PrettyPrint.Leijen.Text (Doc, Pretty (..), SimpleDoc (..),
@@ -79,12 +80,12 @@ import           Text.PrettyPrint.Leijen.Text (Doc, Pretty (..), SimpleDoc (..),
                                                renderOneLine, renderPretty)
 import qualified Text.PrettyPrint.Leijen.Text as PP
 
-import Control.Monad  (liftM, liftM2, liftM3, liftM4)
-import Data.String    (IsString (..))
-import Data.Text.Lazy (Text)
+import           Control.Monad                (liftM, liftM2, liftM3, liftM4)
+import           Data.String                  (IsString (..))
+import           Data.Text.Lazy               (Text)
 
 infixr 5 </>,<//>,<$>,<$$>
-infixr 6 <>,<+>,<++>
+infixr 6 <+>,<++>
 
 instance Monad m => IsString (m Doc) where
     fromString = string . fromString
@@ -249,12 +250,6 @@ hcat = liftM PP.hcat
 --   inserted by @vcat@, all documents are directly concatenated.
 vcat :: (Monad m) => m [Doc] -> m Doc
 vcat = liftM PP.vcat
-
--- | The document @(x \<\> y)@ concatenates document @x@ and document
---   @y@. It is an associative operation having 'empty' as a left and
---   right unit.  (infixr 6)
-(<>) :: (Monad m) => m Doc -> m Doc -> m Doc
-(<>) = liftM2 (PP.<>)
 
 -- | The document @(x \<+\> y)@ concatenates document @x@ and @y@ with
 --   a 'space' in between.  (infixr 6)
