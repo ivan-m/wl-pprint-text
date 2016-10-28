@@ -594,10 +594,10 @@ instance Pretty Double where
 --instance Pretty Rational where
 --  pretty r = rational r
 
-instance (Pretty a,Pretty b) => Pretty (a,b) where
+instance (Pretty a, Pretty b) => Pretty (a,b) where
   pretty (x,y) = tupled [pretty x, pretty y]
 
-instance (Pretty a,Pretty b,Pretty c) => Pretty (a,b,c) where
+instance (Pretty a, Pretty b, Pretty c) => Pretty (a,b,c) where
   pretty (x,y,z)= tupled [pretty x, pretty y, pretty z]
 
 instance Pretty a => Pretty (Maybe a) where

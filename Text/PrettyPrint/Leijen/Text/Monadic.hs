@@ -96,24 +96,24 @@ instance Monad m => IsString (m Doc) where
 --   horizontally if that fits the page. Otherwise they are aligned
 --   vertically. All comma separators are put in front of the
 --   elements.
-list :: (Monad m) => m [Doc] -> m Doc
-list = liftM PP.list
+list :: Monad m => m [Doc] -> m Doc
+list = fmap PP.list
 
 -- | The document @(tupled xs)@ comma separates the documents @xs@ and
 --   encloses them in parenthesis. The documents are rendered
 --   horizontally if that fits the page. Otherwise they are aligned
 --   vertically. All comma separators are put in front of the
 --   elements.
-tupled :: (Monad m) => m [Doc] -> m Doc
-tupled = liftM PP.tupled
+tupled :: Monad m => m [Doc] -> m Doc
+tupled = fmap PP.tupled
 
 -- | The document @(semiBraces xs)@ separates the documents @xs@ with
 --   semi colons and encloses them in braces. The documents are
 --   rendered horizontally if that fits the page. Otherwise they are
 --   aligned vertically. All semi colons are put in front of the
 --   elements.
-semiBraces :: (Monad m) => m [Doc] -> m Doc
-semiBraces = liftM PP.semiBraces
+semiBraces :: Monad m => m [Doc] -> m Doc
+semiBraces = fmap PP.semiBraces
 
 -- | The document @(encloseSep l r sep xs)@ concatenates the documents
 --   @xs@ separated by @sep@ and encloses the resulting document by
@@ -138,7 +138,7 @@ semiBraces = liftM PP.semiBraces
 --        ,200
 --        ,3000]
 --   @
-encloseSep :: (Monad m) => m Doc -> m Doc -> m Doc -> m [Doc] -> m Doc
+encloseSep :: Monad m => m Doc -> m Doc -> m Doc -> m [Doc] -> m Doc
 encloseSep = liftM4 PP.encloseSep
 
 -- | @(punctuate p xs)@ concatenates all documents in @xs@ with
@@ -164,7 +164,7 @@ encloseSep = liftM4 PP.encloseSep
 --
 --   (If you want put the commas in front of their elements instead of
 --   at the end, you should use 'tupled' or, in general, 'encloseSep'.)
-punctuate :: (Monad m) => m Doc -> m [Doc] -> m [Doc]
+punctuate :: Monad m => m Doc -> m [Doc] -> m [Doc]
 punctuate = liftM2 PP.punctuate
 
 -- | The document @(sep xs)@ concatenates all documents @xs@ either
@@ -172,8 +172,8 @@ punctuate = liftM2 PP.punctuate
 --   with @(\<$\>)@.
 --
 --   > sep xs = group (vsep xs)
-sep :: (Monad m) => m [Doc] -> m Doc
-sep = liftM PP.sep
+sep :: Monad m => m [Doc] -> m Doc
+sep = fmap PP.sep
 
 -- | The document @(fillSep xs)@ concatenates documents @xs@
 --   horizontally with @(\<+\>)@ as long as its fits the page, then
@@ -181,13 +181,13 @@ sep = liftM PP.sep
 --   @xs@.
 --
 --   > fillSep xs = foldr (</>) empty xs
-fillSep :: (Monad m) => m [Doc] -> m Doc
-fillSep = liftM PP.fillSep
+fillSep :: Monad m => m [Doc] -> m Doc
+fillSep = fmap PP.fillSep
 
 -- | The document @(hsep xs)@ concatenates all documents @xs@
 --   horizontally with @(\<+\>)@.
-hsep :: (Monad m) => m [Doc] -> m Doc
-hsep = liftM PP.hsep
+hsep :: Monad m => m [Doc] -> m Doc
+hsep = fmap PP.hsep
 
 -- | The document @(vsep xs)@ concatenates all documents @xs@
 --   vertically with @(\<$\>)@. If a 'group' undoes the line breaks
@@ -219,16 +219,16 @@ hsep = liftM PP.hsep
 --        lay
 --        out
 --   @
-vsep :: (Monad m) => m [Doc] -> m Doc
-vsep = liftM PP.vsep
+vsep :: Monad m => m [Doc] -> m Doc
+vsep = fmap PP.vsep
 
 -- | The document @(cat xs)@ concatenates all documents @xs@ either
 --   horizontally with @(\<\>)@, if it fits the page, or vertically
 --   with @(\<$$\>)@.
 --
 --   > cat xs = group (vcat xs)
-cat :: (Monad m) => m [Doc] -> m Doc
-cat = liftM PP.cat
+cat :: Monad m => m [Doc] -> m Doc
+cat = fmap PP.cat
 
 -- | The document @(fillCat xs)@ concatenates documents @xs@
 --   horizontally with @(\<\>)@ as long as its fits the page, then
@@ -236,180 +236,180 @@ cat = liftM PP.cat
 --   in @xs@.
 --
 --   > fillCat xs = foldr (<//>) empty xs
-fillCat :: (Monad m) => m [Doc] -> m Doc
-fillCat = liftM PP.fillCat
+fillCat :: Monad m => m [Doc] -> m Doc
+fillCat = fmap PP.fillCat
 
 -- | The document @(hcat xs)@ concatenates all documents @xs@
 --   horizontally with @(\<\>)@.
-hcat :: (Monad m) => m [Doc] -> m Doc
-hcat = liftM PP.hcat
+hcat :: Monad m => m [Doc] -> m Doc
+hcat = fmap PP.hcat
 
 -- | The document @(vcat xs)@ concatenates all documents @xs@
 --   vertically with @(\<$$\>)@. If a 'group' undoes the line breaks
 --   inserted by @vcat@, all documents are directly concatenated.
-vcat :: (Monad m) => m [Doc] -> m Doc
-vcat = liftM PP.vcat
+vcat :: Monad m => m [Doc] -> m Doc
+vcat = fmap PP.vcat
 
 -- | The document @(x \<\> y)@ concatenates document @x@ and document
 --   @y@. It is an associative operation having 'empty' as a left and
 --   right unit.  (infixr 6)
-(<>) :: (Monad m) => m Doc -> m Doc -> m Doc
+(<>) :: Monad m => m Doc -> m Doc -> m Doc
 (<>) = liftM2 (PP.<>)
 
 -- | The document @(x \<+\> y)@ concatenates document @x@ and @y@ with
 --   a 'space' in between.  (infixr 6)
-(<+>) :: (Monad m) => m Doc -> m Doc -> m Doc
+(<+>) :: Monad m => m Doc -> m Doc -> m Doc
 (<+>) = liftM2 (PP.<+>)
 
 -- | The document @(x \<++\> y)@ concatenates document @x@ and @y@ with
 --   a 'spacebreak' in between.  (infixr 6)
-(<++>) :: (Monad m) => m Doc -> m Doc -> m Doc
+(<++>) :: Monad m => m Doc -> m Doc -> m Doc
 (<++>) = liftM2 (PP.<++>)
 
 -- | The document @(x \<\/\> y)@ concatenates document @x@ and @y@
 --   with a 'softline' in between. This effectively puts @x@ and @y@
 --   either next to each other (with a @space@ in between) or
 --   underneath each other. (infixr 5)
-(</>) :: (Monad m) => m Doc -> m Doc -> m Doc
+(</>) :: Monad m => m Doc -> m Doc -> m Doc
 (</>) = liftM2 (PP.</>)
 
 -- | The document @(x \<\/\/\> y)@ concatenates document @x@ and @y@
 --   with a 'softbreak' in between. This effectively puts @x@ and @y@
 --   either right next to each other or underneath each other. (infixr
 --   5)
-(<//>) :: (Monad m) => m Doc -> m Doc -> m Doc
+(<//>) :: Monad m => m Doc -> m Doc -> m Doc
 (<//>) = liftM2 (PP.<//>)
 
 -- | The document @(x \<$\> y)@ concatenates document @x@ and @y@ with
 --   a 'line' in between. (infixr 5)
-(<$>) :: (Monad m) => m Doc -> m Doc -> m Doc
+(<$>) :: Monad m => m Doc -> m Doc -> m Doc
 (<$>) = liftM2 (PP.<$>)
 
 -- | The document @(x \<$$\> y)@ concatenates document @x@ and @y@
 --   with a 'linebreak' in between. (infixr 5)
-(<$$>) :: (Monad m) => m Doc -> m Doc -> m Doc
+(<$$>) :: Monad m => m Doc -> m Doc -> m Doc
 (<$$>) = liftM2 (PP.<$$>)
 
 -- | The document @softline@ behaves like 'space' if the resulting
 --   output fits the page, otherwise it behaves like 'line'.
-softline :: (Monad m) => m Doc
+softline :: Monad m => m Doc
 softline = return PP.softline
 
 -- | The document @softbreak@ behaves like 'empty' if the resulting
 --   output fits the page, otherwise it behaves like 'line'.
-softbreak :: (Monad m) => m Doc
+softbreak :: Monad m => m Doc
 softbreak = return PP.softbreak
 
 -- | The document @spacebreak@ behaves like 'space' when rendered normally
 -- but like 'empty' when using 'renderCompact' or 'renderOneLine'.
-spacebreak :: (Monad m) => m Doc
+spacebreak :: Monad m => m Doc
 spacebreak = return PP.spacebreak
 
 -- | Document @(squotes x)@ encloses document @x@ with single quotes
 --   \"'\".
-squotes :: (Monad m) => m Doc -> m Doc
-squotes = liftM PP.squotes
+squotes :: Monad m => m Doc -> m Doc
+squotes = fmap PP.squotes
 
 -- | Document @(dquotes x)@ encloses document @x@ with double quotes
 --   '\"'.
-dquotes :: (Monad m) => m Doc -> m Doc
-dquotes = liftM PP.dquotes
+dquotes :: Monad m => m Doc -> m Doc
+dquotes = fmap PP.dquotes
 
 -- | Document @(braces x)@ encloses document @x@ in braces, \"{\" and
 --   \"}\".
-braces :: (Monad m) => m Doc -> m Doc
-braces = liftM PP.braces
+braces :: Monad m => m Doc -> m Doc
+braces = fmap PP.braces
 
 -- | Document @(parens x)@ encloses document @x@ in parenthesis, \"(\"
 --   and \")\".
-parens :: (Monad m) => m Doc -> m Doc
-parens = liftM PP.parens
+parens :: Monad m => m Doc -> m Doc
+parens = fmap PP.parens
 
 -- | Document @(angles x)@ encloses document @x@ in angles, \"\<\" and
 --   \"\>\".
-angles :: (Monad m) => m Doc -> m Doc
-angles = liftM PP.angles
+angles :: Monad m => m Doc -> m Doc
+angles = fmap PP.angles
 
 -- | Document @(brackets x)@ encloses document @x@ in square brackets,
 --   \"[\" and \"]\".
-brackets :: (Monad m) => m Doc -> m Doc
-brackets = liftM PP.brackets
+brackets :: Monad m => m Doc -> m Doc
+brackets = fmap PP.brackets
 
 -- | The document @(enclose l r x)@ encloses document @x@ between
 --   documents @l@ and @r@ using @(\<\>)@.
 --
 --   > enclose l r x = l <> x <> r
-enclose :: (Monad m) => m Doc -> m Doc -> m Doc -> m Doc
+enclose :: Monad m => m Doc -> m Doc -> m Doc -> m Doc
 enclose = liftM3 PP.enclose
 
 -- | The document @lparen@ contains a left parenthesis, \"(\".
-lparen :: (Monad m) => m Doc
+lparen :: Monad m => m Doc
 lparen = return PP.lparen
 
 -- | The document @rparen@ contains a right parenthesis, \")\".
-rparen :: (Monad m) => m Doc
+rparen :: Monad m => m Doc
 rparen = return PP.rparen
 
 -- | The document @langle@ contains a left angle, \"\<\".
-langle :: (Monad m) => m Doc
+langle :: Monad m => m Doc
 langle = return PP.langle
 
 -- | The document @rangle@ contains a right angle, \">\".
-rangle :: (Monad m) => m Doc
+rangle :: Monad m => m Doc
 rangle = return PP.rangle
 
 -- | The document @lbrace@ contains a left brace, \"{\".
-lbrace :: (Monad m) => m Doc
+lbrace :: Monad m => m Doc
 lbrace = return PP.lbrace
 
 -- | The document @rbrace@ contains a right brace, \"}\".
-rbrace :: (Monad m) => m Doc
+rbrace :: Monad m => m Doc
 rbrace = return PP.rbrace
 
 -- | The document @lbracket@ contains a left square bracket, \"[\".
-lbracket :: (Monad m) => m Doc
+lbracket :: Monad m => m Doc
 lbracket = return PP.lbracket
 
 -- | The document @rbracket@ contains a right square bracket, \"]\".
-rbracket :: (Monad m) => m Doc
+rbracket :: Monad m => m Doc
 rbracket = return PP.rbracket
 
 -- | The document @squote@ contains a single quote, \"'\".
-squote :: (Monad m) => m Doc
+squote :: Monad m => m Doc
 squote = return PP.squote
 
 -- | The document @dquote@ contains a double quote, '\"'.
-dquote :: (Monad m) => m Doc
+dquote :: Monad m => m Doc
 dquote = return PP.dquote
 
 -- | The document @semi@ contains a semi colon, \";\".
-semi :: (Monad m) => m Doc
+semi :: Monad m => m Doc
 semi = return PP.semi
 
 -- | The document @colon@ contains a colon, \":\".
-colon :: (Monad m) => m Doc
+colon :: Monad m => m Doc
 colon = return PP.colon
 
 -- | The document @comma@ contains a comma, \",\".
-comma :: (Monad m) => m Doc
+comma :: Monad m => m Doc
 comma = return PP.comma
 
 -- | The document @space@ contains a single space, \" \".
 --
 -- > x <+> y = x <> space <> y
-space :: (Monad m) => m Doc
+space :: Monad m => m Doc
 space = return PP.space
 
 -- | The document @dot@ contains a single dot, \".\".
-dot :: (Monad m) => m Doc
+dot :: Monad m => m Doc
 dot = return PP.dot
 
 -- | The document @backslash@ contains a back slash, \"\\\".
-backslash :: (Monad m) => m Doc
+backslash :: Monad m => m Doc
 backslash = return PP.backslash
 
 -- | The document @equals@ contains an equal sign, \"=\".
-equals :: (Monad m) => m Doc
+equals :: Monad m => m Doc
 equals = return PP.equals
 
 -----------------------------------------------------------
@@ -420,37 +420,37 @@ equals = return PP.equals
 --   using @line@ for newline characters and @char@ for all other
 --   characters. It is used instead of 'text' whenever the text
 --   contains newline characters.
-string :: (Monad m) => Text -> m Doc
+string :: Monad m => Text -> m Doc
 string = return . PP.string
 
 -- | The document @(bool b)@ shows the literal boolean @b@ using
 --   'text'.
-bool :: (Monad m) => Bool -> m Doc
+bool :: Monad m => Bool -> m Doc
 bool = return . PP.bool
 
 -- | The document @(int i)@ shows the literal integer @i@ using
 --   'text'.
-int :: (Monad m) => Int -> m Doc
+int :: Monad m => Int -> m Doc
 int = return . PP.int
 
 -- | The document @(integer i)@ shows the literal integer @i@ using
 --   'text'.
-integer :: (Monad m) => Integer -> m Doc
+integer :: Monad m => Integer -> m Doc
 integer = return . PP.integer
 
 -- | The document @(float f)@ shows the literal float @f@ using
 --   'text'.
-float :: (Monad m) => Float -> m Doc
+float :: Monad m => Float -> m Doc
 float = return . PP.float
 
 -- | The document @(double d)@ shows the literal double @d@ using
 --   'text'.
-double :: (Monad m) => Double -> m Doc
+double :: Monad m => Double -> m Doc
 double = return . PP.double
 
 -- | The document @(rational r)@ shows the literal rational @r@ using
 --   'text'.
-rational :: (Monad m) => Rational -> m Doc
+rational :: Monad m => Rational -> m Doc
 rational = return . PP.rational
 
 -- | A monadic version of 'pretty'; this is to allow you to use the
@@ -482,11 +482,11 @@ prettyM = return . pretty
 --       nest   :: Int -> Doc -> Doc
 --       linebreak :: Doc
 --   @
-fill :: (Monad m) => Int -> m Doc -> m Doc
-fill = liftM . PP.fill
+fill :: Monad m => Int -> m Doc -> m Doc
+fill = fmap . PP.fill
 
 
-width :: (Monad m) => m Doc -> m (Int -> Doc) -> m Doc
+width :: Monad m => m Doc -> m (Int -> Doc) -> m Doc
 width = liftM2 PP.width
 
 -- | The document @(fillBreak i x)@ first renders document @x@. It
@@ -507,8 +507,8 @@ width = liftM2 PP.width
 --       linebreak
 --              :: Doc
 --   @
-fillBreak :: (Monad m) => Int -> m Doc -> m Doc
-fillBreak = liftM . PP.fillBreak
+fillBreak :: Monad m => Int -> m Doc -> m Doc
+fillBreak = fmap . PP.fillBreak
 
 -- | The document @(indent i x)@ indents document @x@ with @i@ spaces.
 --
@@ -523,8 +523,8 @@ fillBreak = liftM . PP.fillBreak
 --       indents these
 --       words !
 --   @
-indent :: (Monad m) => Int -> m Doc -> m Doc
-indent = liftM . PP.indent
+indent :: Monad m => Int -> m Doc -> m Doc
+indent = fmap . PP.indent
 
 -- | The hang combinator implements hanging indentation. The document
 --   @(hang i x)@ renders document @x@ with a nesting level set to the
@@ -545,8 +545,8 @@ indent = liftM . PP.indent
 --   The @hang@ combinator is implemented as:
 --
 --   > hang i x = align (nest i x)
-hang :: (Monad m) => Int -> m Doc -> m Doc
-hang = liftM . PP.hang
+hang :: Monad m => Int -> m Doc -> m Doc
+hang = fmap . PP.hang
 
 -- | The document @(align x)@ renders document @x@ with the nesting
 --   level set to the current column. It is used for example to
@@ -565,39 +565,39 @@ hang = liftM . PP.hang
 --   hi nice
 --      world
 --   @
-align :: (Monad m) => m Doc -> m Doc
-align = liftM PP.align
+align :: Monad m => m Doc -> m Doc
+align = fmap PP.align
 
 -- | The empty document is, indeed, empty. Although @empty@ has no
 --   content, it does have a \'height\' of 1 and behaves exactly like
 --   @(text \"\")@ (and is therefore not a unit of @\<$\>@).
-empty :: (Monad m) => m Doc
+empty :: Monad m => m Doc
 empty = return PP.empty
 
 -- | The document @(char c)@ contains the literal character @c@. The
 --   character shouldn't be a newline (@'\n'@), the function 'line'
 --   should be used for line breaks.
-char :: (Monad m) => Char -> m Doc
+char :: Monad m => Char -> m Doc
 char = return . PP.char
 
 -- | The document @(text s)@ contains the literal string @s@. The
 --   string shouldn't contain any newline (@'\n'@) characters. If the
 --   string contains newline characters, the function 'string' should
 --   be used.
-text :: (Monad m) => Text -> m Doc
+text :: Monad m => Text -> m Doc
 text = return . PP.text
 
 -- | The @line@ document advances to the next line and indents to the
 --   current nesting level. Document @line@ behaves like @(text \"
 --   \")@ if the line break is undone by 'group' or if rendered with
 --   'renderOneLine'.
-line :: (Monad m) => m Doc
+line :: Monad m => m Doc
 line = return PP.line
 
 -- | The @linebreak@ document advances to the next line and indents to
 --   the current nesting level. Document @linebreak@ behaves like
 --   'empty' if the line break is undone by 'group'.
-linebreak :: (Monad m) => m Doc
+linebreak :: Monad m => m Doc
 linebreak = return PP.linebreak
 
 -- | The document @(nest i x)@ renders document @x@ with the current
@@ -613,22 +613,22 @@ linebreak = return PP.linebreak
 --     world
 --   !
 --   @
-nest :: (Monad m) => Int -> m Doc -> m Doc
-nest = liftM . PP.nest
+nest :: Monad m => Int -> m Doc -> m Doc
+nest = fmap . PP.nest
 
 -- | Specifies how to create the document based upon which column it is in.
-column :: (Monad m) => m (Int -> Doc) -> m Doc
-column = liftM PP.column
+column :: Monad m => m (Int -> Doc) -> m Doc
+column = fmap PP.column
 
 -- | Specifies how to nest the document based upon which column it is
 --   being nested in.
-nesting :: (Monad m) => m (Int -> Doc) -> m Doc
-nesting = liftM PP.nesting
+nesting :: Monad m => m (Int -> Doc) -> m Doc
+nesting = fmap PP.nesting
 
 -- | The @group@ combinator is used to specify alternative
 --   layouts. The document @(group x)@ undoes all line breaks in
 --   document @x@. The resulting line is added to the current line if
 --   that fits the page. Otherwise, the document @x@ is rendered
 --   without any changes.
-group :: (Monad m) => m Doc -> m Doc
-group = liftM PP.group
+group :: Monad m => m Doc -> m Doc
+group = fmap PP.group
