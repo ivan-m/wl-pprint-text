@@ -519,32 +519,32 @@ string str = case T.uncons str of
 -- | The document @(bool b)@ shows the literal boolean @b@ using
 --   'text'.
 bool   :: Bool -> Doc
-bool b = text' b
+bool = text'
 
 -- | The document @(int i)@ shows the literal integer @i@ using
 --   'text'.
 int   :: Int -> Doc
-int i = text' i
+int = text'
 
 -- | The document @(integer i)@ shows the literal integer @i@ using
 --   'text'.
 integer   :: Integer -> Doc
-integer i = text' i
+integer = text'
 
 -- | The document @(float f)@ shows the literal float @f@ using
 --   'text'.
 float   :: Float -> Doc
-float f = text' f
+float = text'
 
 -- | The document @(double d)@ shows the literal double @d@ using
 --   'text'.
 double   :: Double -> Doc
-double d = text' d
+double = text'
 
 -- | The document @(rational r)@ shows the literal rational @r@ using
 --   'text'.
 rational   :: Rational -> Doc
-rational r = text' r
+rational = text'
 
 text' :: (Show a) => a -> Doc
 text' = text . T.pack . show
@@ -575,24 +575,24 @@ instance Pretty () where
   pretty () = text' ()
 
 instance Pretty Bool where
-  pretty b = bool b
+  pretty = bool
 
 instance Pretty Char where
-  pretty c = char c
+  pretty = char
 
   prettyList s = string $ T.pack s
 
 instance Pretty Int where
-  pretty i = int i
+  pretty = int
 
 instance Pretty Integer where
-  pretty i = integer i
+  pretty = integer
 
 instance Pretty Float where
-  pretty f = float f
+  pretty = float
 
 instance Pretty Double where
-  pretty d = double d
+  pretty = double
 
 --instance Pretty Rational where
 --  pretty r = rational r
@@ -632,7 +632,7 @@ instance Pretty a => Pretty (Maybe a) where
 --   @
 fillBreak     :: Int -> Doc -> Doc
 fillBreak f x = width x (\w ->
-                          if (w > f)
+                          if w > f
                             then nest f linebreak
                             else spaced (f - w)
                         )
@@ -662,7 +662,7 @@ fillBreak f x = width x (\w ->
 --   @
 fill     :: Int -> Doc -> Doc
 fill f d = width d (\w ->
-                     if (w >= f)
+                     if w >= f
                        then empty
                        else spaced (f - w)
                    )
@@ -1014,8 +1014,7 @@ displayT = B.toLazyText . displayB
 --
 --   > hPutDoc handle doc = displayIO handle (renderPretty 0.4 100 doc)
 displayIO :: Handle -> SimpleDoc -> IO ()
-displayIO handle simpleDoc
- = display simpleDoc
+displayIO handle = display
     where
       display SEmpty        = return ()
       display (SChar c x)   = hPutChar handle c >> display x
@@ -1048,7 +1047,7 @@ instance Show SimpleDoc where
 -- hello world
 -- @
 putDoc :: Doc -> IO ()
-putDoc doc = hPutDoc stdout doc
+putDoc = hPutDoc stdout
 
 -- | @(hPutDoc handle doc)@ pretty prints document @doc@ to the file
 --   handle @handle@ with a page width of 100 characters and a ribbon
