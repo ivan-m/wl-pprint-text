@@ -126,6 +126,7 @@ import Data.String (IsString (..))
 import System.IO   (Handle, hPutChar, stdout)
 
 import           Data.Int               (Int64)
+import           Data.List              (intersperse)
 import           Data.Monoid            (Monoid (..), (<>))
 import           Data.Text.Lazy         (Text)
 import qualified Data.Text.Lazy         as T
@@ -510,11 +511,7 @@ equals = char '='
 --   characters. It is used instead of 'text' whenever the text
 --   contains newline characters.
 string :: Text -> Doc
-string str = case T.uncons str of
-               Nothing          -> empty
-               Just ('\n',str') -> line <> string str'
-               _                -> case (T.span (/='\n') str) of
-                                     (xs,ys) -> text xs <> string ys
+string = mconcat . intersperse line . map text . T.lines
 
 -- | The document @(bool b)@ shows the literal boolean @b@ using
 --   'text'.
