@@ -21,7 +21,7 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
    Doc, -- putDoc, hPutDoc,
 
    -- * Basic combinators
-   empty, char, text, (<>), nest, line, linebreak, group, softline,
+   empty, char, text, textStrict, (<>), nest, line, linebreak, group, softline,
    softbreak, spacebreak,
 
    -- * Alignment
@@ -55,7 +55,7 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
    squote, dquote, semi, colon, comma, space, dot, backslash, equals,
 
    -- * Primitive type documents
-   string, int, integer, float, double, rational, bool,
+   string, stringStrict, int, integer, float, double, rational, bool,
 
    -- * Position-based combinators
    column, nesting, width,
@@ -65,7 +65,7 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
 
    -- * Rendering
    SimpleDoc(..), renderPretty, renderCompact, renderOneLine,
-   displayB, displayT, displayIO, putDoc, hPutDoc
+   displayB, displayT, displayTStrict, displayIO, putDoc, hPutDoc
 
    ) where
 
@@ -74,13 +74,14 @@ import Prelude hiding ((<$>))
 #endif
 
 import           Text.PrettyPrint.Leijen.Text (Doc, Pretty (..), SimpleDoc (..),
-                                               displayB, displayIO, displayT,
+                                               displayB, displayIO, displayT, displayTStrict,
                                                hPutDoc, putDoc, renderCompact,
                                                renderOneLine, renderPretty)
 import qualified Text.PrettyPrint.Leijen.Text as PP
 
 import Control.Monad  (liftM, liftM2, liftM3, liftM4)
 import Data.String    (IsString (..))
+import qualified Data.Text as TS
 import Data.Text.Lazy (Text)
 
 infixr 5 </>,<//>,<$>,<$$>
@@ -423,6 +424,9 @@ equals = return PP.equals
 string :: (Monad m) => Text -> m Doc
 string = return . PP.string
 
+stringStrict :: Monad m => TS.Text -> m Doc
+stringStrict = return . PP.stringStrict
+
 -- | The document @(bool b)@ shows the literal boolean @b@ using
 --   'text'.
 bool :: (Monad m) => Bool -> m Doc
@@ -586,6 +590,9 @@ char = return . PP.char
 --   be used.
 text :: (Monad m) => Text -> m Doc
 text = return . PP.text
+
+textStrict :: Monad m => TS.Text -> m Doc
+textStrict = return . PP.textStrict
 
 -- | The @line@ document advances to the next line and indents to the
 --   current nesting level. Document @line@ behaves like @(text \"

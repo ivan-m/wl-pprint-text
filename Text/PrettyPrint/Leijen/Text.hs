@@ -70,7 +70,7 @@ module Text.PrettyPrint.Leijen.Text (
    Doc,
 
    -- * Basic combinators
-   empty, char, text, (<>), nest, line, linebreak, group, softline,
+   empty, char, text, textStrict, (<>), nest, line, linebreak, group, softline,
    softbreak, spacebreak,
 
    -- * Alignment
@@ -104,7 +104,7 @@ module Text.PrettyPrint.Leijen.Text (
    squote, dquote, semi, colon, comma, space, dot, backslash, equals,
 
    -- * Primitive type documents
-   string, int, integer, float, double, rational, bool,
+   string, stringStrict, int, integer, float, double, rational, bool,
 
    -- * Position-based combinators
    column, nesting, width,
@@ -114,7 +114,7 @@ module Text.PrettyPrint.Leijen.Text (
 
    -- * Rendering
    SimpleDoc(..), renderPretty, renderCompact, renderOneLine,
-   displayB, displayT, displayIO, putDoc, hPutDoc
+   displayB, displayT, displayTStrict, displayIO, putDoc, hPutDoc
 
    ) where
 
@@ -128,6 +128,7 @@ import System.IO   (Handle, hPutChar, stdout)
 import           Data.Int               (Int64)
 import           Data.List              (intersperse)
 import           Data.Monoid            (Monoid (..), (<>))
+import qualified Data.Text              as TS
 import           Data.Text.Lazy         (Text)
 import qualified Data.Text.Lazy         as T
 import           Data.Text.Lazy.Builder (Builder)
@@ -513,6 +514,9 @@ equals = char '='
 string :: Text -> Doc
 string = mconcat . intersperse line . map text . T.lines
 
+stringStrict :: TS.Text -> Doc
+stringStrict = mconcat . intersperse line . map textStrict . TS.lines
+
 -- | The document @(bool b)@ shows the literal boolean @b@ using
 --   'text'.
 bool   :: Bool -> Doc
@@ -567,6 +571,9 @@ instance Pretty Doc where
 
 instance Pretty Text where
   pretty = string
+
+instance Pretty TS.Text where
+  pretty = stringStrict
 
 instance Pretty () where
   pretty () = text' ()
@@ -806,6 +813,11 @@ text s
   | T.null s  = Empty
   | otherwise = Text (T.length s) (B.fromLazyText s)
 
+textStrict :: TS.Text -> Doc
+textStrict s
+  | TS.null s  = Empty
+  | otherwise  = Text (fromIntegral $ TS.length s) (B.fromText s)
+
 -- | The @line@ document advances to the next line and indents to the
 --   current nesting level. Document @line@ behaves like @(text \"
 --   \")@ if the line break is undone by 'group' or if rendered with
@@ -1004,6 +1016,9 @@ c `consB` b = B.singleton c `mappend` b
 --   > showWidth w x = displayT (renderPretty 0.4 w x)
 displayT :: SimpleDoc -> Text
 displayT = B.toLazyText . displayB
+
+displayTStrict :: SimpleDoc -> TS.Text
+displayTStrict = T.toStrict . displayT
 
 -- | @(displayIO handle simpleDoc)@ writes @simpleDoc@ to the
 --   file handle @handle@. This function is used for example by
