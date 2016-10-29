@@ -118,9 +118,8 @@ module Text.PrettyPrint.Leijen.Text (
 
    ) where
 
-#if defined(__GLASGOW_HASKELL__) && __GLASGOW_HASKELL__ >= 710
-import Prelude hiding ((<$>))
-#endif
+import Prelude ()
+import Prelude.Compat hiding ((<$>))
 
 import Data.String (IsString (..))
 import System.IO   (Handle, hPutChar, stdout)
@@ -584,7 +583,7 @@ instance Pretty Bool where
 instance Pretty Char where
   pretty = char
 
-  prettyList s = string $ T.pack s
+  prettyList = string . T.pack
 
 instance Pretty Int where
   pretty = int
@@ -601,10 +600,10 @@ instance Pretty Double where
 --instance Pretty Rational where
 --  pretty r = rational r
 
-instance (Pretty a,Pretty b) => Pretty (a,b) where
+instance (Pretty a, Pretty b) => Pretty (a,b) where
   pretty (x,y) = tupled [pretty x, pretty y]
 
-instance (Pretty a,Pretty b,Pretty c) => Pretty (a,b,c) where
+instance (Pretty a, Pretty b, Pretty c) => Pretty (a,b,c) where
   pretty (x,y,z)= tupled [pretty x, pretty y, pretty z]
 
 instance Pretty a => Pretty (Maybe a) where
