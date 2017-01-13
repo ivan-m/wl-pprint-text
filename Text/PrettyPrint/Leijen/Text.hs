@@ -877,7 +877,7 @@ flatten                :: Doc -> Doc
 flatten (Cat x y)      = Cat (flatten x) (flatten y)
 flatten (Nest i x)     = Nest i (flatten x)
 flatten (Line brk)     = if brk then Empty else Text 1 (B.singleton ' ')
-flatten (Expanded _ r) = r
+flatten (Expanded _ r) = flatten r
 flatten (Union x _)    = flatten x
 flatten (Column f)     = Column (flatten . f)
 flatten (Nesting f)    = Nesting (flatten . f)
