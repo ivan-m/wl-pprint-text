@@ -70,7 +70,7 @@ module Text.PrettyPrint.Leijen.Text (
    Doc,
 
    -- * Basic combinators
-   empty, char, text, textStrict, (<>), nest, line, linebreak, group, softline,
+   empty, char, text, textStrict, (<>), (<|>), nest, line, linebreak, group, softline,
    softbreak, spacebreak,
 
    -- * Alignment
@@ -760,6 +760,7 @@ data Doc = Empty
          | Char Char             -- invariant: char is not '\n'
          | Text !Int64 Builder   -- invariant: text doesn't contain '\n'
          | Line !Bool            -- True <=> when undone by group, do not insert a space
+         | Expanded Doc Doc      -- Act like the first document unless flattened
          | Cat Doc Doc
          | Nest !Int64 Doc
          | Union Doc Doc         -- invariant: first lines of first doc longer than the first lines of the second doc
@@ -869,14 +870,23 @@ nesting f = Nesting (f . fromIntegral)
 group   :: Doc -> Doc
 group x = Union (flatten x) x
 
-flatten              :: Doc -> Doc
-flatten (Cat x y)   = Cat (flatten x) (flatten y)
-flatten (Nest i x)  = Nest i (flatten x)
-flatten (Line brk)  = if brk then Empty else Text 1 (B.singleton ' ')
-flatten (Union x _) = flatten x
-flatten (Column f)  = Column (flatten . f)
-flatten (Nesting f) = Nesting (flatten . f)
-flatten other       = other                     --Empty,Char,Text
+-- | The @<|>@ combinator is used to choose between expanded and
+--   compact representations. The document @l <|> r@ will format
+--   as the document @l@, however the document @group (l <|> r)@
+--   will format as @l@ only if the formatting for @r@ would be
+--   too long to fit on one line.
+(<|>) :: Doc -> Doc -> Doc
+(<|>) = Expanded
+
+flatten                :: Doc -> Doc
+flatten (Cat x y)      = Cat (flatten x) (flatten y)
+flatten (Nest i x)     = Nest i (flatten x)
+flatten (Line brk)     = if brk then Empty else Text 1 (B.singleton ' ')
+flatten (Expanded _ r) = flatten r
+flatten (Union x _)    = flatten x
+flatten (Column f)     = Column (flatten . f)
+flatten (Nesting f)    = Nesting (flatten . f)
+flatten other          = other                     --Empty,Char,Text
 
 -----------------------------------------------------------
 -- Renderers
@@ -913,17 +923,18 @@ renderPretty rfrac w doc
       best _ _ Nil = SEmpty
       best n k (Cons i d ds)
         = case d of
-            Empty     -> best n k ds
-            Char c    -> let k' = k+1 in seq k' $ SChar c (best n k' ds)
-            Text l s  -> let k' = k+l in seq k' $ SText l s (best n k' ds)
-            Line _    -> SLine i (best i i ds)
-            Cat x y   -> best n k (Cons i x (Cons i y ds))
-            Nest j x  -> let i' = i+j in seq i' (best n k (Cons i' x ds))
-            Union x y -> nicest n k (best n k $ Cons i x ds)
-                                    (best n k $ Cons i y ds)
-            Column f  -> best n k (Cons i (f k) ds)
-            Nesting f -> best n k (Cons i (f i) ds)
-            Spaces l  -> let k' = k+l in seq k' $ SText l (spaces l) (best n k' ds)
+            Empty        -> best n k ds
+            Char c       -> let k' = k+1 in seq k' $ SChar c (best n k' ds)
+            Text l s     -> let k' = k+l in seq k' $ SText l s (best n k' ds)
+            Line _       -> SLine i (best i i ds)
+            Cat x y      -> best n k (Cons i x (Cons i y ds))
+            Nest j x     -> let i' = i+j in seq i' (best n k (Cons i' x ds))
+            Union x y    -> nicest n k (best n k $ Cons i x ds)
+                                       (best n k $ Cons i y ds)
+            Column f     -> best n k (Cons i (f k) ds)
+            Nesting f    -> best n k (Cons i (f i) ds)
+            Spaces l     -> let k' = k+l in seq k' $ SText l (spaces l) (best n k' ds)
+            Expanded l _ -> best n k (Cons i l ds)
 
       --nicest :: r = ribbon width, w = page width,
       --          n = indentation of current line, k = current column
@@ -959,16 +970,17 @@ renderCompact dc
       scan _ [] = SEmpty
       scan k (d:ds)
         = case d of
-            Empty     -> scan k ds
-            Char c    -> let k' = k+1 in seq k' (SChar c (scan k' ds))
-            Text l s  -> let k' = k+l in seq k' (SText l s (scan k' ds))
-            Line _    -> SLine 0 (scan 0 ds)
-            Cat x y   -> scan k (x:y:ds)
-            Nest _ x  -> scan k (x:ds)
-            Union _ y -> scan k (y:ds)
-            Column f  -> scan k (f k:ds)
-            Nesting f -> scan k (f 0:ds)
-            Spaces _  -> scan k ds
+            Empty        -> scan k ds
+            Char c       -> let k' = k+1 in seq k' (SChar c (scan k' ds))
+            Text l s     -> let k' = k+l in seq k' (SText l s (scan k' ds))
+            Line _       -> SLine 0 (scan 0 ds)
+            Cat x y      -> scan k (x:y:ds)
+            Nest _ x     -> scan k (x:ds)
+            Union _ y    -> scan k (y:ds)
+            Column f     -> scan k (f k:ds)
+            Nesting f    -> scan k (f 0:ds)
+            Spaces _     -> scan k ds
+            Expanded l _ -> scan k (l:ds)
 
 -- | @(renderOneLine x)@ renders document @x@ without adding any
 --   indentation or newlines.
@@ -979,17 +991,18 @@ renderOneLine dc
       scan _ [] = SEmpty
       scan k (d:ds)
         = case d of
-            Empty      -> scan k ds
-            Char c     -> let k' = k+1 in seq k' (SChar c (scan k' ds))
-            Text l s   -> let k' = k+l in seq k' (SText l s (scan k' ds))
-            Line False -> let k' = k+1 in seq k' (SChar ' ' (scan k' ds))
-            Line _     -> scan k ds
-            Cat x y    -> scan k (x:y:ds)
-            Nest _ x   -> scan k (x:ds)
-            Union _ y  -> scan k (y:ds)
-            Column f   -> scan k (f k:ds)
-            Nesting f  -> scan k (f 0:ds)
-            Spaces _   -> scan k ds
+            Empty        -> scan k ds
+            Char c       -> let k' = k+1 in seq k' (SChar c (scan k' ds))
+            Text l s     -> let k' = k+l in seq k' (SText l s (scan k' ds))
+            Line False   -> let k' = k+1 in seq k' (SChar ' ' (scan k' ds))
+            Line _       -> scan k ds
+            Cat x y      -> scan k (x:y:ds)
+            Nest _ x     -> scan k (x:ds)
+            Union _ y    -> scan k (y:ds)
+            Column f     -> scan k (f k:ds)
+            Nesting f    -> scan k (f 0:ds)
+            Spaces _     -> scan k ds
+            Expanded l _ -> scan k (l:ds)
 
 -----------------------------------------------------------
 -- Displayers:  displayS and displayIO
