@@ -70,7 +70,7 @@ module Text.PrettyPrint.Leijen.Text (
    Doc,
 
    -- * Basic combinators
-   empty, char, text, textStrict, (<>), nest, line, linebreak, group, softline,
+   empty, char, text, textStrict, (<>), (<|>), nest, line, linebreak, group, softline,
    softbreak, spacebreak,
 
    -- * Alignment
@@ -870,8 +870,13 @@ nesting f = Nesting (f . fromIntegral)
 group   :: Doc -> Doc
 group x = Union (flatten x) x
 
-expanded :: Doc -> Doc -> Doc
-expanded = Expanded
+-- | The @<|>@ combinator is used to choose between expanded and
+--   compact representations. The document @l <|> r@ will format
+--   as the document @l@, however the document @group (l <|> r)@
+--   will format as @l@ only if the formatting for @r@ would be
+--   too long to fit on one line.
+(<|>) :: Doc -> Doc -> Doc
+(<|>) = Expanded
 
 flatten                :: Doc -> Doc
 flatten (Cat x y)      = Cat (flatten x) (flatten y)
