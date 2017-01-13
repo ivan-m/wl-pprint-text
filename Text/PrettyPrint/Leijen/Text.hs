@@ -357,7 +357,7 @@ x     <++> y     = x <> spacebreak <> y
 splitWithBreak               :: Bool -> Doc -> Doc -> Doc
 splitWithBreak _ Empty b     = b
 splitWithBreak _ a     Empty = a
-splitWithBreak f a     b     = a <> group (mkLine f) <> b
+splitWithBreak f a     b     = a <> group (Line f) <> b
 
 -- | The document @(x \<$\> y)@ concatenates document @x@ and @y@ with
 --   a 'line' in between. (infixr 5)
@@ -372,11 +372,7 @@ splitWithBreak f a     b     = a <> group (mkLine f) <> b
 splitWithLine               :: Bool -> Doc -> Doc -> Doc
 splitWithLine _ Empty b     = b
 splitWithLine _ a     Empty = a
-splitWithLine f a     b     = a <> mkLine f <> b
-
-mkLine :: Bool -> Doc
-mkLine True = line
-mkLine False = linebreak
+splitWithLine f a     b     = a <> Line f <> b
 
 -- | The document @softline@ behaves like 'space' if the resulting
 --   output fits the page, otherwise it behaves like 'line'.
@@ -763,7 +759,7 @@ align d = column (\k ->
 data Doc = Empty
          | Char Char             -- invariant: char is not '\n'
          | Text !Int64 Builder   -- invariant: text doesn't contain '\n'
-         | Line                  -- True <=> when undone by group, do not insert a space
+         | Line !Bool            -- True <=> when undone by group, do not insert a space
          | Expanded Doc Doc      -- Act like the first document unless flattened
          | Cat Doc Doc
          | Nest !Int64 Doc
@@ -827,13 +823,13 @@ textStrict s
 --   \")@ if the line break is undone by 'group' or if rendered with
 --   'renderOneLine'.
 line :: Doc
-line = Expanded Line space
+line = Line False
 
 -- | The @linebreak@ document advances to the next line and indents to
 --   the current nesting level. Document @linebreak@ behaves like
 --   'empty' if the line break is undone by 'group'.
 linebreak :: Doc
-linebreak = Expanded Line empty
+linebreak = Line True
 
 beside             :: Doc -> Doc -> Doc
 beside Empty r     = r
@@ -880,7 +876,7 @@ expanded = Expanded
 flatten                :: Doc -> Doc
 flatten (Cat x y)      = Cat (flatten x) (flatten y)
 flatten (Nest i x)     = Nest i (flatten x)
-flatten Line           = Empty  -- should be impossible?
+flatten (Line brk)     = if brk then Empty else Text 1 (B.singleton ' ')
 flatten (Expanded _ r) = r
 flatten (Union x _)    = flatten x
 flatten (Column f)     = Column (flatten . f)
@@ -925,7 +921,7 @@ renderPretty rfrac w doc
             Empty        -> best n k ds
             Char c       -> let k' = k+1 in seq k' $ SChar c (best n k' ds)
             Text l s     -> let k' = k+l in seq k' $ SText l s (best n k' ds)
-            Line         -> SLine i (best i i ds)
+            Line _       -> SLine i (best i i ds)
             Cat x y      -> best n k (Cons i x (Cons i y ds))
             Nest j x     -> let i' = i+j in seq i' (best n k (Cons i' x ds))
             Union x y    -> nicest n k (best n k $ Cons i x ds)
@@ -969,16 +965,17 @@ renderCompact dc
       scan _ [] = SEmpty
       scan k (d:ds)
         = case d of
-            Empty     -> scan k ds
-            Char c    -> let k' = k+1 in seq k' (SChar c (scan k' ds))
-            Text l s  -> let k' = k+l in seq k' (SText l s (scan k' ds))
-            Line      -> SLine 0 (scan 0 ds)
-            Cat x y   -> scan k (x:y:ds)
-            Nest _ x  -> scan k (x:ds)
-            Union _ y -> scan k (y:ds)
-            Column f  -> scan k (f k:ds)
-            Nesting f -> scan k (f 0:ds)
-            Spaces _  -> scan k ds
+            Empty        -> scan k ds
+            Char c       -> let k' = k+1 in seq k' (SChar c (scan k' ds))
+            Text l s     -> let k' = k+l in seq k' (SText l s (scan k' ds))
+            Line _       -> SLine 0 (scan 0 ds)
+            Cat x y      -> scan k (x:y:ds)
+            Nest _ x     -> scan k (x:ds)
+            Union _ y    -> scan k (y:ds)
+            Column f     -> scan k (f k:ds)
+            Nesting f    -> scan k (f 0:ds)
+            Spaces _     -> scan k ds
+            Expanded l _ -> scan k (l:ds)
 
 -- | @(renderOneLine x)@ renders document @x@ without adding any
 --   indentation or newlines.
@@ -989,17 +986,18 @@ renderOneLine dc
       scan _ [] = SEmpty
       scan k (d:ds)
         = case d of
-            Empty      -> scan k ds
-            Char c     -> let k' = k+1 in seq k' (SChar c (scan k' ds))
-            Text l s   -> let k' = k+l in seq k' (SText l s (scan k' ds))
-            --Line False -> let k' = k+1 in seq k' (SChar ' ' (scan k' ds))
-            Line       -> scan k ds
-            Cat x y    -> scan k (x:y:ds)
-            Nest _ x   -> scan k (x:ds)
-            Union _ y  -> scan k (y:ds)
-            Column f   -> scan k (f k:ds)
-            Nesting f  -> scan k (f 0:ds)
-            Spaces _   -> scan k ds
+            Empty        -> scan k ds
+            Char c       -> let k' = k+1 in seq k' (SChar c (scan k' ds))
+            Text l s     -> let k' = k+l in seq k' (SText l s (scan k' ds))
+            Line False   -> let k' = k+1 in seq k' (SChar ' ' (scan k' ds))
+            Line _       -> scan k ds
+            Cat x y      -> scan k (x:y:ds)
+            Nest _ x     -> scan k (x:ds)
+            Union _ y    -> scan k (y:ds)
+            Column f     -> scan k (f k:ds)
+            Nesting f    -> scan k (f 0:ds)
+            Spaces _     -> scan k ds
+            Expanded l _ -> scan k (l:ds)
 
 -----------------------------------------------------------
 -- Displayers:  displayS and displayIO
