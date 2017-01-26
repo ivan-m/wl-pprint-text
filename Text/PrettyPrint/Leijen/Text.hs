@@ -70,8 +70,8 @@ module Text.PrettyPrint.Leijen.Text (
    Doc,
 
    -- * Basic combinators
-   empty, char, text, textStrict, (<>), nest, line, linebreak, group, softline,
-   softbreak, spacebreak,
+   empty, isEmpty, char, text, textStrict, (<>), nest, line, linebreak, group,
+   softline, softbreak, spacebreak,
 
    -- * Alignment
    --
@@ -805,6 +805,11 @@ data SimpleDoc = SEmpty
 --   @(text \"\")@ (and is therefore not a unit of @\<$\>@).
 empty :: Doc
 empty = Empty
+
+-- | Determine if the document is empty or not.
+isEmpty :: Doc -> Bool
+isEmpty Empty = True
+isEmpty _     = False
 
 -- | The document @(char c)@ contains the literal character @c@. The
 --   character shouldn't be a newline (@'\n'@), the function 'line'
