@@ -118,10 +118,10 @@ module Text.PrettyPrint.Leijen.Text (
 
    ) where
 
-import Prelude ()
+import Prelude        ()
 import Prelude.Compat hiding ((<$>))
 
-import Data.String (IsString (..))
+import Data.String (IsString(..))
 import System.IO   (Handle, hPutChar, stdout)
 
 import           Data.Int               (Int64)
@@ -233,8 +233,8 @@ encloseSep left right sp ds
 --   (If you want put the commas in front of their elements instead of
 --   at the end, you should use 'tupled' or, in general, 'encloseSep'.)
 punctuate :: Doc -> [Doc] -> [Doc]
-punctuate _ [] = []
-punctuate _ [d] = [d]
+punctuate _ []     = []
+punctuate _ [d]    = [d]
 punctuate p (d:ds) = (d <> p) : punctuate p ds
 
 
@@ -612,7 +612,7 @@ instance (Pretty a, Pretty b, Pretty c) => Pretty (a,b,c) where
   pretty (x,y,z)= tupled [pretty x, pretty y, pretty z]
 
 instance Pretty a => Pretty (Maybe a) where
-  pretty Nothing = empty
+  pretty Nothing  = empty
 
   pretty (Just x) = pretty x
 
