@@ -126,7 +126,7 @@ import System.IO   (Handle, hPutChar, stdout)
 
 import           Data.Int               (Int64)
 import           Data.List              (intersperse)
-import           Data.Monoid            (Monoid (..), (<>))
+import           Data.Monoid            (Monoid(..))
 import qualified Data.Text              as TS
 import           Data.Text.Lazy         (Text)
 import qualified Data.Text.Lazy         as T
@@ -134,6 +134,11 @@ import           Data.Text.Lazy.Builder (Builder)
 import qualified Data.Text.Lazy.Builder as B
 import qualified Data.Text.Lazy.IO      as T
 
+#if MIN_VERSION_base (4,9,0)
+import Data.Semigroup (Semigroup(..))
+#else
+import Data.Monoid ((<>))
+#endif
 
 infixr 5 </>,<//>,<$>,<$$>
 infixr 6 <+>,<++>
@@ -773,6 +778,11 @@ instance IsString Doc where
 -- | In particular, note that the document @(x '<>' y)@ concatenates
 --   document @x@ and document @y@. It is an associative operation
 --   having 'empty' as a left and right unit.  (infixr 6)
+#if MIN_VERSION_base (4,9,0)
+instance Semigroup Doc where
+    (<>) = beside
+
+#endif
 instance Monoid Doc where
     mempty  = empty
     mappend = beside
