@@ -17,7 +17,7 @@ Extra-Source-Files: Changelog.md
 
 Source-Repository head
     type: git
-    location: git://github.com/ivan-m/wl-pprint-text.git
+    location: https://github.com/ivan-m/wl-pprint-text.git
 
 Library
   Exposed-modules:     Text.PrettyPrint.Leijen.Text,
