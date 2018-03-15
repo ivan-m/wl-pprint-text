@@ -70,19 +70,24 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
    ) where
 
 import Prelude ()
+
+#if MIN_VERSION_base_compat (0,9,3)
+import Prelude.Compat hiding ((<$>), (<>))
+#else
 import Prelude.Compat hiding ((<$>))
+#endif
 
-
-import           Text.PrettyPrint.Leijen.Text (Doc, Pretty (..), SimpleDoc (..),
-                                               displayB, displayIO, displayT, displayTStrict,
-                                               hPutDoc, putDoc, renderCompact,
-                                               renderOneLine, renderPretty)
+import           Text.PrettyPrint.Leijen.Text (Doc, Pretty(..), SimpleDoc(..),
+                                               displayB, displayIO, displayT,
+                                               displayTStrict, hPutDoc, putDoc,
+                                               renderCompact, renderOneLine,
+                                               renderPretty)
 import qualified Text.PrettyPrint.Leijen.Text as PP
 
-import Control.Applicative (liftA2, liftA3)
-import Data.String    (IsString (..))
-import qualified Data.Text as TS
-import Data.Text.Lazy (Text)
+import           Control.Applicative (liftA2, liftA3)
+import           Data.String         (IsString(..))
+import qualified Data.Text           as TS
+import           Data.Text.Lazy      (Text)
 
 infixr 5 </>,<//>,<$>,<$$>
 infixr 6 <>,<+>,<++>
