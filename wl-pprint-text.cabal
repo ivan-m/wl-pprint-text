@@ -11,7 +11,7 @@ Category:            Text
 Build-type:          Simple
 Tested-With:        GHC == 7.4.2, GHC == 7.6.3, GHC == 7.8.4,
                     GHC == 7.10.2, GHC == 8.0.1, GHC == 8.2.2,
-                    GHC == 8.3.*
+                    GHC == 8.4.1, GHC == 8.5.*
 Cabal-version:       >=1.6
 Extra-Source-Files: Changelog.md
                     README.md
