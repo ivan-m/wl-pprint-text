@@ -70,7 +70,7 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
    ) where
 
 import Prelude ()
-import Prelude.Compat hiding ((<$>))
+import Prelude.Compat hiding ((<$>), (<>))
 
 
 import           Text.PrettyPrint.Leijen.Text (Doc, Pretty (..), SimpleDoc (..),
