@@ -21,7 +21,7 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
    Doc, -- putDoc, hPutDoc,
 
    -- * Basic combinators
-   empty, char, text, textStrict, (<>), nest, line, linebreak, group, softline,
+   empty, char, text, textStrict, (Text.PrettyPrint.Leijen.Text.Monadic.<>), nest, line, linebreak, group, softline,
    softbreak, spacebreak,
 
    -- * Alignment
