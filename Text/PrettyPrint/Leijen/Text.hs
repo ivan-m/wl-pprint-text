@@ -126,7 +126,6 @@ import System.IO   (Handle, hPutChar, stdout)
 
 import           Data.Int               (Int64)
 import           Data.List              (intersperse)
-import           Data.Monoid            (Monoid(..))
 import qualified Data.Text              as TS
 import           Data.Text.Lazy         (Text)
 import qualified Data.Text.Lazy         as T
