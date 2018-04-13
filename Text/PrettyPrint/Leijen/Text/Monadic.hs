@@ -71,7 +71,7 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
 
 import Prelude ()
 
-#if MIN_VERSION_base_compat (0,9,3)
+#if MIN_VERSION_base (4,9,0)
 import Prelude.Compat hiding ((<$>), (<>))
 #else
 import Prelude.Compat hiding ((<$>))
