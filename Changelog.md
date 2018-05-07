@@ -1,3 +1,18 @@
+1.2.0.0 (2018-05-07)
+====================
+
+* Remove `IsString (m Doc)` instance (#16).
+
+* Export the `beside` function from both modules.
+
+    - For non-Monadic pretty-printing this is identical to the
+      Semigroup/Monoid `<>` combinator.
+
+    - For Monadic pretty-printing this is the lifted version of `<>`.
+
+* No longer export `<>`.  Use `beside` instead, or the
+  Semigroup/Monoid instance (for non-Monadic).
+
 1.1.1.1 (2018-04-13)
 ====================
 
