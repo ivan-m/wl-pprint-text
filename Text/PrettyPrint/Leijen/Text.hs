@@ -70,7 +70,7 @@ module Text.PrettyPrint.Leijen.Text (
    Doc,
 
    -- * Basic combinators
-   empty, isEmpty, char, text, textStrict, (<>), nest, line, linebreak, group,
+   empty, isEmpty, char, text, textStrict, beside, nest, line, linebreak, group,
    softline, softbreak, spacebreak,
 
    -- * Alignment
@@ -140,7 +140,7 @@ import Data.Monoid ((<>))
 #endif
 
 infixr 5 </>,<//>,<$>,<$$>
-infixr 6 <+>,<++>
+infixr 6 <+>,<++>,`beside`
 
 
 -----------------------------------------------------------
@@ -844,6 +844,11 @@ line = Line False
 linebreak :: Doc
 linebreak = Line True
 
+-- | The document @(x `beside` y)@ concatenates document @x@ and @y@.
+--   It is an associative operation having 'empty' as a left and right
+--   unit.  (infixr 6)
+--
+--   It is equivalent to `<>`.
 beside             :: Doc -> Doc -> Doc
 beside Empty r     = r
 beside l     Empty = l
@@ -950,7 +955,7 @@ renderPretty rfrac w doc
             wth = min (w64 - k) (r - k + n)
 
 fits                 :: Int64 -> SimpleDoc -> Bool
-fits w _ | w < 0     = False
+fits w _             | w < 0     = False
 fits _ SEmpty        = True
 fits w (SChar _ x)   = fits (w - 1) x
 fits w (SText l _ x) = fits (w - l) x

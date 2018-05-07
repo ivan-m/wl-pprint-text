@@ -21,7 +21,7 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
    Doc, -- putDoc, hPutDoc,
 
    -- * Basic combinators
-   empty, char, text, textStrict, (<>), nest, line, linebreak, group, softline,
+   empty, char, text, textStrict, beside, nest, line, linebreak, group, softline,
    softbreak, spacebreak,
 
    -- * Alignment
@@ -71,11 +71,7 @@ module Text.PrettyPrint.Leijen.Text.Monadic (
 
 import Prelude ()
 
-#if MIN_VERSION_base (4,9,0)
-import Prelude.Compat hiding ((<$>), (<>))
-#else
 import Prelude.Compat hiding ((<$>))
-#endif
 
 import           Text.PrettyPrint.Leijen.Text (Doc, Pretty(..), SimpleDoc(..),
                                                displayB, displayIO, displayT,
@@ -89,7 +85,7 @@ import qualified Data.Text           as TS
 import           Data.Text.Lazy      (Text)
 
 infixr 5 </>,<//>,<$>,<$$>
-infixr 6 <>,<+>,<++>
+infixr 6 <+>,<++>,`beside`
 
 -----------------------------------------------------------
 
@@ -252,11 +248,11 @@ hcat = fmap PP.hcat
 vcat :: (Functor m) => m [Doc] -> m Doc
 vcat = fmap PP.vcat
 
--- | The document @(x \<\> y)@ concatenates document @x@ and document
---   @y@. It is an associative operation having 'empty' as a left and
---   right unit.  (infixr 6)
-(<>) :: (Applicative m) => m Doc -> m Doc -> m Doc
-(<>) = liftA2 (PP.<>)
+-- | The document @(x `beside` y)@ concatenates document @x@ and
+--   document @y@. It is an associative operation having 'empty' as a
+--   left and right unit.  (infixr 6)
+beside :: (Applicative m) => m Doc -> m Doc -> m Doc
+beside = liftA2 (PP.beside)
 
 -- | The document @(x \<+\> y)@ concatenates document @x@ and @y@ with
 --   a 'space' in between.  (infixr 6)
@@ -338,9 +334,9 @@ brackets :: (Functor m) => m Doc -> m Doc
 brackets = fmap PP.brackets
 
 -- | The document @(enclose l r x)@ encloses document @x@ between
---   documents @l@ and @r@ using @(\<\>)@.
+--   documents @l@ and @r@ using @'beside'@.
 --
---   > enclose l r x = l <> x <> r
+--   > enclose l r x = l `beside` x `beside` r
 enclose :: (Applicative m) => m Doc -> m Doc -> m Doc -> m Doc
 enclose = liftA3 PP.enclose
 
@@ -398,7 +394,7 @@ comma = pure PP.comma
 
 -- | The document @space@ contains a single space, \" \".
 --
--- > x <+> y = x <> space <> y
+-- > x <+> y = x `beside` space `beside` y
 space :: (Applicative m) => m Doc
 space = pure PP.space
 
