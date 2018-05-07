@@ -85,15 +85,11 @@ import           Text.PrettyPrint.Leijen.Text (Doc, Pretty(..), SimpleDoc(..),
 import qualified Text.PrettyPrint.Leijen.Text as PP
 
 import           Control.Applicative (liftA2, liftA3)
-import           Data.String         (IsString(..))
 import qualified Data.Text           as TS
 import           Data.Text.Lazy      (Text)
 
 infixr 5 </>,<//>,<$>,<$$>
 infixr 6 <>,<+>,<++>
-
-instance (Applicative m) => IsString (m Doc) where
-    fromString = string . fromString
 
 -----------------------------------------------------------
 
