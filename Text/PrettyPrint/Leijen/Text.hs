@@ -118,11 +118,11 @@ module Text.PrettyPrint.Leijen.Text (
 
    ) where
 
-import Prelude        ()
-import Prelude.Compat hiding ((<$>))
+import           Prelude                ()
+import           Prelude.Compat         hiding ((<$>))
 
-import Data.String (IsString(..))
-import System.IO   (Handle, hPutChar, stdout)
+import           Data.String            (IsString (..))
+import           System.IO              (Handle, hPutChar, stdout)
 
 import           Data.Int               (Int64)
 import           Data.List              (intersperse)
@@ -133,10 +133,8 @@ import           Data.Text.Lazy.Builder (Builder)
 import qualified Data.Text.Lazy.Builder as B
 import qualified Data.Text.Lazy.IO      as T
 
-#if MIN_VERSION_base (4,9,0)
-import Data.Semigroup (Semigroup(..))
-#else
-import Data.Monoid ((<>))
+#if !MIN_VERSION_base (4,9,0)
+import           Data.Monoid            ((<>))
 #endif
 
 infixr 5 </>,<//>,<$>,<$$>
