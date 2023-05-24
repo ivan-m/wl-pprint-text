@@ -36,7 +36,7 @@ Library
   Exposed-modules:     Text.PrettyPrint.Leijen.Text,
                        Text.PrettyPrint.Leijen.Text.Monadic
   Build-depends:       base        >= 4.5.0.0  && < 5,
-                       base-compat >= 0.10     && < 0.13,
+                       base-compat >= 0.10     && < 0.14,
                        text        >= 0.11.0.0 && < 2.1
   Default-language:    Haskell98
   GHC-Options:         -Wall
